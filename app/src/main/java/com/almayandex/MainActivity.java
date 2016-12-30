@@ -2,6 +2,7 @@ package com.almayandex;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -32,8 +33,9 @@ import ru.yandex.yandexmapkit.overlay.location.MyLocationItem;
 import ru.yandex.yandexmapkit.overlay.location.OnMyLocationListener;
 import ru.yandex.yandexmapkit.utils.GeoPoint;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,OnMapListener,OnMyLocationListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,OnMapListener,OnMyLocationListener {
+    public static final int SEARCH_ADDRESS_CODE = 1;
+    public static final int WAYS_CODE=2;
     private MapController mMapController;
     private LinearLayout mView;
     private LocationManager locationManager;
@@ -46,6 +48,7 @@ public class MainActivity extends AppCompatActivity
     private GeoPoint geoPoint;
     private Geocoder geocoder;
     private Address address;
+    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,13 +102,14 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id){
+            case R.id.action_settings:{
+                Intent intent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(intent);
+                break;
+            }
         }
-
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -113,11 +117,15 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-        if (id == R.id.ways) {
-           String s = "";
-        } else if (id == R.id.adr_search) {
-
+        switch (id){
+            case R.id.ways:{
+                break;
+            }
+            case R.id.adr_search:{
+                intent = new Intent(this,AdrActivity.class);
+                startActivityForResult(intent,SEARCH_ADDRESS_CODE);
+                break;
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -138,5 +146,22 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onMyLocationChange(MyLocationItem myLocationItem) {
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode==RESULT_OK){
+            switch (requestCode){
+                case SEARCH_ADDRESS_CODE:{
+                    break;
+                }
+                case WAYS_CODE:{
+                    break;
+                }
+                default:{
+                    break;
+                }
+            }
+        }
     }
 }
