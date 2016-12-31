@@ -22,6 +22,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 
+import com.almayandex.geo.OverlayGeoCode;
+
+import java.util.List;
+
 import ru.yandex.yandexmapkit.MapController;
 import ru.yandex.yandexmapkit.MapView;
 import ru.yandex.yandexmapkit.OverlayManager;
@@ -37,12 +41,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final int SEARCH_ADDRESS_CODE = 1;
     public static final int WAYS_CODE=2;
     private MapController mMapController;
-    private LinearLayout mView;
     private LocationManager locationManager;
     private MapView mapView;
     private Context context;
     private boolean isGPSProviderEnabled;//включен ли GPS/ нет покажем тоаст
-    private Overlay overlay;
+    private Overlay currentOverlay;
     private OverlayManager overlayManager;
     private OverlayItem overlayItem;
     private GeoPoint geoPoint;
@@ -72,7 +75,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mMapController.addMapListener(this);
         mMapController.getOverlayManager().getMyLocation().addMyLocationListener(this);
 
-        mView = (LinearLayout) findViewById(R.id.view);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -80,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         checkEnabled();
         overlayManager = mMapController.getOverlayManager();
+        currentOverlay = new Overlay(mMapController);
+        overlayManager.addOverlay(new OverlayGeoCode(mapView.getMapController(),getApplicationContext(),currentOverlay));//подписал контроллер на событие тапа по карте в произв месте
     }
 
     @Override
@@ -94,7 +98,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
