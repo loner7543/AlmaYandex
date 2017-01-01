@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -28,6 +29,13 @@ import android.widget.Toast;
 
 import com.almayandex.adapters.ImageAdapter;
 import com.almayandex.geo.OverlayGeoCode;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -45,7 +53,8 @@ import ru.yandex.yandexmapkit.overlay.location.MyLocationItem;
 import ru.yandex.yandexmapkit.overlay.location.OnMyLocationListener;
 import ru.yandex.yandexmapkit.utils.GeoPoint;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,OnMapListener,OnMyLocationListener,AdapterView.OnItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
+        OnMapListener,OnMyLocationListener,AdapterView.OnItemSelectedListener,GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     public static final String TAG = "MainActivity";
     public static final int SEARCH_ADDRESS_CODE = 1;
     public static final int WAYS_CODE=2;
@@ -66,11 +75,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ImageAdapter spinnerAdapter;
     private Bitmap selectedMarker;
     private BitmapDrawable res;
+    private GoogleApiClient googleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -92,11 +108,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mMapController.getOverlayManager().getMyLocation().addMyLocationListener(this);
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        //checkEnabled();
+
         overlayManager = mMapController.getOverlayManager();
         currentOverlay = new Overlay(mMapController);
         initMarkers();
@@ -138,7 +150,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
         switch (id){
             case R.id.ways:{
@@ -147,6 +158,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.adr_search:{
                 intent = new Intent(this,AdrActivity.class);
                 startActivityForResult(intent,SEARCH_ADDRESS_CODE);
+                break;
+            }
+            case R.id.add_curr_location:{
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    Toast toast = Toast.makeText(this,"Включите Геолокацию",Toast.LENGTH_LONG);
+                    toast.show();
+
+                }
+                else {
+                    Location location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+                    if (location != null) {
+                        GeoPoint geoPoint = new GeoPoint(location.getLatitude(),location.getLongitude());
+                        overlayItem = new OverlayItem(geoPoint,context.getResources().getDrawable(R.drawable.a));//TODO пока захардкодил иконку
+                        currentOverlay.addOverlayItem(overlayItem);//
+                        mMapController.getOverlayManager().addOverlay(currentOverlay);//TODO не уверен что нужно добавлять  новый слой
+                    }
+                    else {
+                        Toast toast = Toast.makeText(this,"Включите Геолокацию",Toast.LENGTH_LONG);
+                        toast.show();
+                    }
+                }
                 break;
             }
         }
@@ -217,8 +250,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         overlayManager.addOverlay(new OverlayGeoCode(mapView.getMapController(),getApplicationContext(),currentOverlay,res));//подписал контроллер на событие тапа по карте в произв месте
     }
 
+    //TODO методы гуглового елиента для опред тек положения
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
 
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        googleApiClient.connect();
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        googleApiClient.connect();
     }
 }

@@ -11,9 +11,9 @@
             android:icon="@drawable/ic_menu_gallery"
             android:title="Поиск по адресу" />
         <item
-            android:id="@+id/nav_slideshow"
+            android:id="@+id/add_curr_location"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
+            android:title="Доб тек местополож" />
         <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"
