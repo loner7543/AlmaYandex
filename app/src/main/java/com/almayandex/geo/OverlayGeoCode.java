@@ -2,6 +2,7 @@ package com.almayandex.geo;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
 
 import com.almayandex.R;
 
@@ -23,12 +24,14 @@ public class OverlayGeoCode extends Overlay implements GeoCodeListener {
     private OverlayItem overlayItem;
     private MapController controller;
     private Context ctx;
+    private BitmapDrawable bitmapDrawable;
 
-    public OverlayGeoCode(MapController mapController, Context context,Overlay ov) {
+    public OverlayGeoCode(MapController mapController, Context context,Overlay ov,BitmapDrawable drawable) {
         super(mapController);
         this.controller = mapController;
         this.ctx = context;
         this.overlay = ov;
+        this.bitmapDrawable = drawable;
     }
 
 
@@ -50,7 +53,7 @@ public class OverlayGeoCode extends Overlay implements GeoCodeListener {
                 @Override
                 public void run() {
                     GeoPoint geoPoint = geoCode.getGeoPoint();
-                    overlayItem = new OverlayItem(geoPoint,ctx.getResources().getDrawable(R.drawable.a));
+                    overlayItem = new OverlayItem(geoPoint,bitmapDrawable);
                     overlay.addOverlayItem(overlayItem);
                     controller.getOverlayManager().addOverlay(overlay);
                 }

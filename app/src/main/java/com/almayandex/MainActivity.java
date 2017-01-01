@@ -4,27 +4,35 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.LinearLayout;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Spinner;
+import android.widget.Toast;
 
+import com.almayandex.adapters.ImageAdapter;
 import com.almayandex.geo.OverlayGeoCode;
 
+import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import ru.yandex.yandexmapkit.MapController;
 import ru.yandex.yandexmapkit.MapView;
@@ -37,12 +45,14 @@ import ru.yandex.yandexmapkit.overlay.location.MyLocationItem;
 import ru.yandex.yandexmapkit.overlay.location.OnMyLocationListener;
 import ru.yandex.yandexmapkit.utils.GeoPoint;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,OnMapListener,OnMyLocationListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,OnMapListener,OnMyLocationListener,AdapterView.OnItemSelectedListener {
+    public static final String TAG = "MainActivity";
     public static final int SEARCH_ADDRESS_CODE = 1;
     public static final int WAYS_CODE=2;
     private MapController mMapController;
     private LocationManager locationManager;
     private MapView mapView;
+    private Spinner imageSpinner;
     private Context context;
     private boolean isGPSProviderEnabled;//включен ли GPS/ нет покажем тоаст
     private Overlay currentOverlay;
@@ -52,6 +62,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Geocoder geocoder;
     private Address address;
     private Intent intent;
+    private List<Bitmap> markers;
+    private ImageAdapter spinnerAdapter;
+    private Bitmap selectedMarker;
+    private BitmapDrawable res;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,8 +82,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         mapView = (MapView) findViewById(R.id.map);
+        imageSpinner = (Spinner) findViewById(R.id.image_spinner);
         mapView.showBuiltInScreenButtons(true);
         mMapController = mapView.getMapController();
+        geocoder = new Geocoder(this, Locale.getDefault());//TODO Возможны проблемы с локалью
 
         context = getApplicationContext();
         mMapController.addMapListener(this);
@@ -80,10 +96,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        checkEnabled();
+        //checkEnabled();
         overlayManager = mMapController.getOverlayManager();
         currentOverlay = new Overlay(mMapController);
-        overlayManager.addOverlay(new OverlayGeoCode(mapView.getMapController(),getApplicationContext(),currentOverlay));//подписал контроллер на событие тапа по карте в произв месте
+        initMarkers();
+        spinnerAdapter = new ImageAdapter(context,R.layout.spinner_item,markers);
+        imageSpinner.setAdapter(spinnerAdapter);
+        imageSpinner.setOnItemSelectedListener(this);
+        imageSpinner.setSelection(1);
     }
 
     @Override
@@ -156,6 +176,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (resultCode==RESULT_OK){
             switch (requestCode){
                 case SEARCH_ADDRESS_CODE:{
+                    String addr = data.getStringExtra("addr");
+                    try {
+                        List<Address> addresses = geocoder.getFromLocationName(addr,1);
+                        Address adr = addresses.get(0);
+                        GeoPoint geoPoint = new GeoPoint(adr.getLatitude(),adr.getLongitude());
+                        overlayItem = new OverlayItem(geoPoint,context.getResources().getDrawable(R.drawable.a));//TODO пока захардкодил иконку
+                        currentOverlay.addOverlayItem(overlayItem);//
+                        mMapController.getOverlayManager().addOverlay(currentOverlay);//TODO не уверен что нужно добавлять  новый слой
+                    } catch (IOException e) {
+                        Log.d(TAG,"Address callback crashed");
+                        Toast toast = Toast.makeText(this,"адрес указан неверно",Toast.LENGTH_LONG);
+                        toast.show();
+                        e.printStackTrace();
+                    }
                     break;
                 }
                 case WAYS_CODE:{
@@ -166,5 +200,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
         }
+    }
+
+    public void initMarkers(){
+        markers = new LinkedList<>();
+        Bitmap icon = BitmapFactory.decodeResource(context.getResources(),R.drawable.a);
+        markers.add(icon);
+        icon = BitmapFactory.decodeResource(context.getResources(),R.drawable.shop);
+        markers.add(icon);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        selectedMarker = (Bitmap) adapterView.getSelectedItem();
+        res = new BitmapDrawable(context.getResources(),selectedMarker);
+        overlayManager.addOverlay(new OverlayGeoCode(mapView.getMapController(),getApplicationContext(),currentOverlay,res));//подписал контроллер на событие тапа по карте в произв месте
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
     }
 }

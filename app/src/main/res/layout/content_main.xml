@@ -27,8 +27,15 @@
                 android:tag="static"/>
         </LinearLayout>
     </ScrollView>
-    <Spinner
+    <TextView
         android:layout_below="@+id/map_container"
+        android:id="@+id/choice_marker"
+        android:text="Выберите маркер"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <Spinner
+        android:id="@+id/image_spinner"
+        android:layout_below="@+id/choice_marker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"></Spinner>
 </RelativeLayout>
