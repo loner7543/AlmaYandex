@@ -12,6 +12,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
@@ -76,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Bitmap selectedMarker;
     private BitmapDrawable res;
     private GoogleApiClient googleApiClient;
+    private List<GeoPoint> freePoints;//вне путешествия
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,7 +117,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         spinnerAdapter = new ImageAdapter(context,R.layout.spinner_item,markers);
         imageSpinner.setAdapter(spinnerAdapter);
         imageSpinner.setOnItemSelectedListener(this);
-        imageSpinner.setSelection(1);
+        imageSpinner.setSelection(1);//  TODO захардкодил пока
+        freePoints = new LinkedList<>();
     }
 
     @Override
@@ -174,12 +177,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         overlayItem = new OverlayItem(geoPoint,context.getResources().getDrawable(R.drawable.a));//TODO пока захардкодил иконку
                         currentOverlay.addOverlayItem(overlayItem);//
                         mMapController.getOverlayManager().addOverlay(currentOverlay);//TODO не уверен что нужно добавлять  новый слой
+                        freePoints.add(geoPoint);
                     }
                     else {
                         Toast toast = Toast.makeText(this,"Включите Геолокацию",Toast.LENGTH_LONG);
                         toast.show();
                     }
                 }
+                break;
+            }
+            case R.id.free_points_show:{
+                intent = new Intent(this,FreePointsActivity.class);
+                int i = 0;
+                for (GeoPoint geoPoint:freePoints){
+                    intent.putExtra("lat"+i, geoPoint.getLat());
+                    intent.putExtra("lon"+i,geoPoint.getLon());
+                    i++;
+                }
+                intent.putExtra("count",freePoints.size());
+                startActivity(intent);
                 break;
             }
         }
@@ -247,7 +263,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         selectedMarker = (Bitmap) adapterView.getSelectedItem();
         res = new BitmapDrawable(context.getResources(),selectedMarker);
-        overlayManager.addOverlay(new OverlayGeoCode(mapView.getMapController(),getApplicationContext(),currentOverlay,res));//подписал контроллер на событие тапа по карте в произв месте
+        overlayManager.addOverlay(new OverlayGeoCode(mapView.getMapController(),getApplicationContext(),currentOverlay,res,freePoints));//подписал контроллер на событие тапа по карте в произв месте
     }
 
     //TODO методы гуглового елиента для опред тек положения

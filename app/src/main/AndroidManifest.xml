@@ -21,6 +21,7 @@
         <meta-data
             android:name="com.google.android.gms.vision"
             android:value="@integer/google_play_services_version" />
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -31,7 +32,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AdrActivity"></activity>
+        <activity android:name=".AdrActivity" />
+        <activity android:name=".FreePointsActivity"></activity>
     </application>
 
 </manifest>
