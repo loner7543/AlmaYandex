@@ -33,7 +33,15 @@
             </intent-filter>
         </activity>
         <activity android:name=".AdrActivity" />
-        <activity android:name=".FreePointsActivity"></activity>
+        <activity android:name=".FreePointsActivity" />
+        <activity
+            android:name=".TravelActivity"
+            android:label="@string/title_activity_travel"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".AddTravelActivity"
+            android:label="@string/title_activity_add_travel"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

@@ -10,6 +10,7 @@ public class Travel {
     private GeoPoint startPoint;
     private GeoPoint endPoint;
     private String title;
+    private int color;
 
     public Travel(GeoPoint startPoint, GeoPoint endPoint, String title) {
         this.startPoint = startPoint;
@@ -42,5 +43,13 @@ public class Travel {
 
     public void setStartPoint(GeoPoint startPoint) {
         this.startPoint = startPoint;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
     }
 }

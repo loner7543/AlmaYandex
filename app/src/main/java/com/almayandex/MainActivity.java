@@ -12,7 +12,6 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
@@ -33,10 +32,6 @@ import com.almayandex.geo.OverlayGeoCode;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -58,8 +53,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         OnMapListener,OnMyLocationListener,AdapterView.OnItemSelectedListener,GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     public static final String TAG = "MainActivity";
     public static final int SEARCH_ADDRESS_CODE = 1;
-    public static final int WAYS_CODE=2;
+    public static final int ADD_TRAVEL_CODE =2;
     public static final int FREE_POINTS_CODE = 3;
+    public static final int REMOVE_TRAVEL_CODE  =4;
     private MapController mMapController;
     private LocationManager locationManager;
     private MapView mapView;
@@ -157,6 +153,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
         switch (id){
             case R.id.ways:{
+                intent = new Intent(this,TravelActivity.class);
+                startActivity(intent);
                 break;
             }
             case R.id.adr_search:{
@@ -197,6 +195,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 intent.putExtra("count",freePoints.size());
                 startActivityForResult(intent,FREE_POINTS_CODE);
+                break;
+            }
+            case R.id.add_travel:{
+                intent = new Intent(this,AddTravelActivity.class);
+                startActivityForResult(intent,ADD_TRAVEL_CODE);
                 break;
             }
         }
@@ -273,7 +276,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                     break;
                 }
-                case WAYS_CODE:{
+                case ADD_TRAVEL_CODE:{
+                    break;
+                }
+                case REMOVE_TRAVEL_CODE:{
                     break;
                 }
                 default:{

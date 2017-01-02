@@ -2,6 +2,8 @@ package com.almayandex;
 
 import android.content.Context;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import ru.yandex.yandexmapkit.overlay.balloon.BalloonItem;
 import ru.yandex.yandexmapkit.overlay.balloon.OnBalloonListener;
@@ -12,8 +14,13 @@ import ru.yandex.yandexmapkit.utils.GeoPoint;
  */
 
 public class BallonItem extends BalloonItem implements OnBalloonListener {
+    public ImageView imageView;
+    public TextView textView;
+    public Context mContext;
+
     public BallonItem(Context context, GeoPoint geoPoint) {
         super(context, geoPoint);
+        mContext = context;
     }
 
     @Override

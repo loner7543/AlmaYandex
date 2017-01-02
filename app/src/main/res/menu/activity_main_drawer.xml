@@ -18,6 +18,10 @@
             android:id="@+id/free_points_show"
             android:icon="@drawable/ic_menu_manage"
             android:title="Свободные точки" />
+        <item
+            android:id="@+id/add_travel"
+            android:title="Добавить путешевствие">
+        </item>
     </group>
 
 </menu>

@@ -2,6 +2,8 @@ package com.almayandex.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.location.Address;
+import android.location.Geocoder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +13,9 @@ import android.widget.TextView;
 
 import com.almayandex.R;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 import ru.yandex.yandexmapkit.utils.GeoPoint;
 
@@ -24,6 +28,9 @@ public class PointsAdapter extends BaseAdapter {
     private LayoutInflater layoutInflater;
     private Context ctx;
     private  int LayResId;
+    private Geocoder geocoder;
+    private List<Address> address;
+    private Address addr;
 
 
     public PointsAdapter(Context context, int resource, List<GeoPoint> objects) {
@@ -31,6 +38,7 @@ public class PointsAdapter extends BaseAdapter {
         this.LayResId = resource;
         this.data = objects;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        geocoder = new Geocoder(ctx, Locale.getDefault());
     }
     @Override
     public int getCount() {
@@ -52,11 +60,30 @@ public class PointsAdapter extends BaseAdapter {
         View row = view;
         row = layoutInflater.inflate(LayResId,viewGroup,false);
         GeoPoint point = getCurrentPoint(i);
-        TextView lat = (TextView) row.findViewById(R.id.Latitude_text);
-        lat.setText(String.valueOf(point.getLat()));
+        try {
+            address = geocoder.getFromLocation(point.getLat(),point.getLon(),1);
+            addr = address.get(0);
 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        TextView lat = (TextView) row.findViewById(R.id.Latitude_text);
         TextView lon = (TextView) row.findViewById(R.id.Longitude_text);
-        lon.setText(String.valueOf(point.getLon()));
+        String adminArea = addr.getAdminArea();
+        if (adminArea==null)
+        {
+            lat.setText(addr.getCountryName());
+        }
+        else {
+            lat.setText(addr.getCountryName()+" , "+addr.getAdminArea());
+        }
+        String street = addr.getSubThoroughfare();
+        if (street==null){
+            lon.setText(addr.getThoroughfare()+", 0");
+        }
+        else {
+            lon.setText(addr.getThoroughfare()+", "+addr.getSubThoroughfare());
+        }
         return row;
     }
 
