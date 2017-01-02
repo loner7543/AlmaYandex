@@ -14,6 +14,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"></ListView>
     <Button
+       android:layout_below="@+id/free_points_list"
+        android:id="@+id/removeBtn"
         android:text="Удалить точку"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

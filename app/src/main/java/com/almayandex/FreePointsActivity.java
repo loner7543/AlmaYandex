@@ -16,7 +16,7 @@ import java.util.List;
 import ru.yandex.yandexmapkit.utils.GeoPoint;
 import ru.yandex.yandexmapkit.utils.Point;
 
-public class FreePointsActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+public class FreePointsActivity extends AppCompatActivity implements AdapterView.OnItemClickListener,View.OnClickListener {
     private Button deletePointButton;
     private List<GeoPoint> data;
     private ListView listView;
@@ -30,6 +30,8 @@ public class FreePointsActivity extends AppCompatActivity implements AdapterView
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_free_points);
         listView = (ListView) findViewById(R.id.free_points_list);
+        deletePointButton = (Button) findViewById(R.id.removeBtn);
+        deletePointButton.setOnClickListener(this);
         data = new LinkedList<>();
         intent = getIntent();
         dataCount = intent.getIntExtra("count",100);
@@ -46,6 +48,15 @@ public class FreePointsActivity extends AppCompatActivity implements AdapterView
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        String s = "";
+        selectedItem = (GeoPoint) adapterView.getItemAtPosition(i);
+    }
+
+    @Override
+    public void onClick(View view) {
+        Intent intent = new Intent();
+        intent.putExtra("lat",selectedItem.getLat());
+        intent.putExtra("lon",selectedItem.getLon());
+        setResult(RESULT_OK,intent);
+        finish();
     }
 }

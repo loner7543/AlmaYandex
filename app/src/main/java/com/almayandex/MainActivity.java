@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final String TAG = "MainActivity";
     public static final int SEARCH_ADDRESS_CODE = 1;
     public static final int WAYS_CODE=2;
+    public static final int FREE_POINTS_CODE = 3;
     private MapController mMapController;
     private LocationManager locationManager;
     private MapView mapView;
@@ -195,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     i++;
                 }
                 intent.putExtra("count",freePoints.size());
-                startActivity(intent);
+                startActivityForResult(intent,FREE_POINTS_CODE);
                 break;
             }
         }
@@ -241,6 +242,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                     break;
                 }
+                /**
+                 * 'элемент слоя=>слой=> карта
+                 * Получаю точку, по точке нахожу элемент слоя - удаляю элемент слоя
+                 * */
+                case FREE_POINTS_CODE:{
+                    try {
+                        GeoPoint removedPoint = null;
+                        OverlayItem removedSl = null;
+                        GeoPoint geoPoint = new GeoPoint(data.getDoubleExtra("lat",0.0),data.getDoubleExtra("lon",0.0));
+                        for (GeoPoint tmp:freePoints){
+                            if (tmp.getLat()==geoPoint.getLat())
+                            {
+                                removedPoint =tmp;
+                            }
+                        }
+                        freePoints.remove(removedPoint);//удалил из списка свободных точек
+                        OverlayItem removedItem = new OverlayItem(removedPoint,null);
+                        List<OverlayItem> overlayItems = currentOverlay.getOverlayItems();
+                        for (OverlayItem item:overlayItems){
+                            if (item.getGeoPoint().getLat()==removedItem.getGeoPoint().getLat()){
+                                removedSl = item;
+                            }
+                        }
+                        overlayItems.remove(removedSl);//удалил элемнет слооя(точку с самой карты)
+                        UpdateMap();//вернул оставшиеся точки на слой
+                    }
+                    catch (Exception e){
+                        Log.d(TAG,"Ошибка при удалении точки");
+                    }
+                    break;
+                }
                 case WAYS_CODE:{
                     break;
                 }
@@ -249,6 +281,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
         }
+    }
+
+    // TODO Сама она не обновляетс после удаления
+    public void UpdateMap(){
+        currentOverlay.clearOverlayItems();
+        OverlayItem overlayItem;
+        for (GeoPoint data:freePoints){
+            overlayItem = new OverlayItem(data,new BitmapDrawable(getResources(),selectedMarker));
+            currentOverlay.addOverlayItem(overlayItem);
+        }
+    }
+    /*
+    * отображает на карте только точки путешевствия
+    * */
+    public void setTravelPoints(Travel travel){
+        currentOverlay.clearOverlayItems();
+        OverlayItem overlayItem;
+        overlayItem = new OverlayItem(travel.getStartPoint(),new BitmapDrawable(getResources(),selectedMarker));
+        currentOverlay.addOverlayItem(overlayItem);
+
+        overlayItem = new OverlayItem(travel.getEndPoint(),new BitmapDrawable(getResources(),selectedMarker));
+        currentOverlay.addOverlayItem(overlayItem);
     }
 
     public void initMarkers(){
@@ -266,7 +320,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         overlayManager.addOverlay(new OverlayGeoCode(mapView.getMapController(),getApplicationContext(),currentOverlay,res,freePoints));//подписал контроллер на событие тапа по карте в произв месте
     }
 
-    //TODO методы гуглового елиента для опред тек положения
+    //TODO методы гуглового kлиента для опред тек положения
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
 
