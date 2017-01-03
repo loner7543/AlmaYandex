@@ -14,6 +14,7 @@
         <TextView
             android:id="@+id/header"
             android:text="Для просмотра описания и фото выберите путешевствие из списка"
+            android:layout_marginBottom="20dp"
             android:textAlignment="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -23,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"></ListView>
         <Button
-            android:id="@+id/addTravelBtn"
+            android:id="@+id/deleteTravelBtn"
             android:layout_below="@+id/travels_list"
             android:text="Удалить путешевствие"
             android:layout_width="wrap_content"

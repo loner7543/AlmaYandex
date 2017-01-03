@@ -158,7 +158,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (id){
             case R.id.ways:{
                 intent = new Intent(this,TravelActivity.class);
-                startActivity(intent);
+                intent.putExtra("count",travels.size());
+                int i = 0;
+                for (Travel travel:travels){
+                    intent.putExtra("name"+i,travel.getTitle());
+                    intent.putExtra("color"+i,travel.getColor());
+                    intent.putExtra("fromLat"+i,travel.getStartPoint().getLat());
+                    intent.putExtra("fromLon"+i,travel.getStartPoint().getLon());
+
+                    intent.putExtra("toLat"+i,travel.getEndPoint().getLat());
+                    intent.putExtra("toLon"+i,travel.getEndPoint().getLon());
+                    i++;
+                }
+                startActivityForResult(intent,REMOVE_TRAVEL_CODE);
                 break;
             }
             case R.id.adr_search:{
@@ -313,6 +325,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     break;
                 }
                 case REMOVE_TRAVEL_CODE:{
+                    double lat = data.getDoubleExtra("fromPointLat",0.0);
+                    String d = "";
                     break;
                 }
                 default:{
