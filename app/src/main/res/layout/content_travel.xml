@@ -25,7 +25,7 @@
         <Button
             android:id="@+id/addTravelBtn"
             android:layout_below="@+id/travels_list"
-            android:text="Добавить путешевствие на карту"
+            android:text="Удалить путешевствие"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </RelativeLayout>

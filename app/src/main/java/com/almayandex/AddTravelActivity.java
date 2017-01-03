@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.almayandex.adapters.PointsAdapter;
@@ -31,6 +32,7 @@ public class AddTravelActivity extends AppCompatActivity implements View.OnClick
     private Intent intent;
     private PointsAdapter pointsAdapter;
     private int count;
+    private EditText travelNameEdit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +40,7 @@ public class AddTravelActivity extends AppCompatActivity implements View.OnClick
         setContentView(R.layout.activity_add_travel);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        travelNameEdit = (EditText) findViewById(R.id.add_travel_name);
         intent = getIntent();
         count = intent.getIntExtra("count",100);
         travelsPoints = new LinkedList<>();
@@ -111,6 +114,7 @@ public class AddTravelActivity extends AppCompatActivity implements View.OnClick
         intent.putExtra("toPointLon",toPoint.getLon());
 
         intent.putExtra("color",color);
+        intent.putExtra("travel_name",travelNameEdit.getText().toString());
         setResult(RESULT_OK,intent);
         finish();
     }

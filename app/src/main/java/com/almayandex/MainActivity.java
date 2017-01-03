@@ -291,7 +291,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     GeoPoint fromPoint = new GeoPoint(data.getDoubleExtra("fromPointLat",0.0),data.getDoubleExtra("fromPointLon",0.0));
                     GeoPoint toPoint = new GeoPoint(data.getDoubleExtra("toPointLat",0.0),data.getDoubleExtra("toPointLon",0.0));
                     int color = data.getIntExtra("color",0);
-                    Travel travel = new Travel(fromPoint,toPoint,"",color);
+                    String travel_name = data.getStringExtra("travel_name");
+                    Travel travel = new Travel(fromPoint,toPoint,travel_name,color);
                     GeoPoint removedFrom = null;
                     GeoPoint removedTo = null;
                     travels.add(travel);
