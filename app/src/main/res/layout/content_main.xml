@@ -22,7 +22,7 @@
             <ru.yandex.yandexmapkit.MapView
                 android:id="@+id/map"
                 android:layout_width="fill_parent"
-                android:layout_height="300dip"
+                android:layout_height="400dip"
                 android:apiKey="KQBd9JyThUD2TMVj13G1jG-K7WQ5w-ewIvc88J4jHavjNNy-fUYlNmd800BFTHbSCZyBsCl1zB~ZdmNQHXOYSab7BGzbiKxQn~PIlXJWBt0="
                 android:tag="static"/>
         </LinearLayout>

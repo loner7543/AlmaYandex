@@ -2,6 +2,8 @@ package com.almayandex.almapath;
 
 import android.content.Context;
 
+import com.almayandex.Travel;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,16 +21,18 @@ public class OverlayRect extends Overlay {
     Context mContext;
     MapController mMapController;
     RectRender rectRender;
+    private Travel travel;
 
-    public OverlayRect(MapController mapController) {
+    public OverlayRect(MapController mapController,Travel t) {
         super(mapController);
         mMapController = mapController;
+        this.travel = t;
         mContext = mapController.getContext();
-        rectRender = new RectRender();
+        rectRender = new RectRender(travel);
         setIRender(rectRender);
         overlayRectItem = new OverlayRectItem(new GeoPoint(0,0), mContext.getResources().getDrawable(android.R.drawable.btn_star));
-        overlayRectItem.geoPoint.add(new GeoPoint(55.247815,35.374329));
-        overlayRectItem.geoPoint.add(new GeoPoint(55.596971,35.385315));
+        overlayRectItem.geoPoint.add(travel.getStartPoint());
+        overlayRectItem.geoPoint.add(travel.getEndPoint());
        /* overlayRectItem.geoPoint.add(new GeoPoint(55.943048,35.165588));
         overlayRectItem.geoPoint.add(new GeoPoint(56.444277,35.55011));
         overlayRectItem.geoPoint.add(new GeoPoint(56.36525,36.077454));

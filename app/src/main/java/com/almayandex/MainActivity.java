@@ -307,7 +307,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                     freePoints.remove(removedFrom);
                     freePoints.remove(removedTo);
-                    overlayRect = new OverlayRect(mMapController);
+                    overlayRect = new OverlayRect(mMapController,travel);
                     mMapController.getOverlayManager().addOverlay(overlayRect);
                     break;
                 }

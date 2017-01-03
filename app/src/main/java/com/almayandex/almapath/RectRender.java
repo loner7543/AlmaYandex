@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 
+import com.almayandex.Travel;
+
 import ru.yandex.yandexmapkit.overlay.IRender;
 import ru.yandex.yandexmapkit.overlay.OverlayItem;
 import ru.yandex.yandexmapkit.utils.ScreenPoint;
@@ -14,6 +16,11 @@ import ru.yandex.yandexmapkit.utils.ScreenPoint;
  */
 
 public class RectRender implements IRender {
+    private Travel travel;
+
+    public RectRender(Travel t){
+        this.travel = t;
+    }
     @Override
     public void draw(Canvas canvas, OverlayItem overlayItem) {
         // TODO Auto-generated method stub
@@ -21,7 +28,7 @@ public class RectRender implements IRender {
         Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);//какой то флаг
         mPaint.setStyle(Paint.Style.STROKE);//тип линии
         mPaint.setStrokeWidth(6);//размер линии в пикселях
-        mPaint.setColor(Color.RED);
+        mPaint.setColor(travel.getColor());
         OverlayRectItem item = (OverlayRectItem) overlayItem;
         Path p = new Path();
         if (item.screenPoint != null && item.screenPoint.size() > 0) {
