@@ -12,10 +12,11 @@ public class Travel {
     private String title;
     private int color;
 
-    public Travel(GeoPoint startPoint, GeoPoint endPoint, String title) {
+    public Travel(GeoPoint startPoint, GeoPoint endPoint, String title, int c) {
         this.startPoint = startPoint;
         this.endPoint = endPoint;
         this.title = title;
+        this.color = c;
     }
 
     public Travel() {

@@ -14,6 +14,7 @@
     tools:showIn="@layout/activity_add_travel">
     <TextView
         android:layout_marginTop="10dp"
+        android:textColor="@color/colorPrimaryDark"
         android:id="@+id/select_color_text"
         android:text="Выберите цвет линии"
         android:layout_width="wrap_content"
@@ -28,6 +29,7 @@
     <TextView
         android:layout_marginTop="10dp"
         android:layout_below="@+id/color_spinner"
+        android:textColor="@color/colorPrimaryDark"
         android:id="@+id/start_point_text"
         android:text="Выберите точку отправления"
         android:layout_width="wrap_content"
@@ -42,6 +44,7 @@
         android:layout_marginTop="10dp"
         android:layout_below="@+id/startPointSpinner"
         android:text="Выберите точку назначения"
+        android:textColor="@color/colorPrimaryDark"
         android:id="@+id/end_point_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

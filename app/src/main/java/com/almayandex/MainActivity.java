@@ -28,6 +28,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.almayandex.adapters.ImageAdapter;
+import com.almayandex.almapath.OverlayRect;
 import com.almayandex.geo.OverlayGeoCode;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -75,6 +76,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private BitmapDrawable res;
     private GoogleApiClient googleApiClient;
     private List<GeoPoint> freePoints;//вне путешествия
+    private List<Travel> travels;
+    private OverlayRect overlayRect;//для рисования пути на карте
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         imageSpinner.setOnItemSelectedListener(this);
         imageSpinner.setSelection(1);//  TODO захардкодил пока
         freePoints = new LinkedList<>();
+        travels = new LinkedList<>();
     }
 
     @Override
@@ -199,6 +203,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
             case R.id.add_travel:{
                 intent = new Intent(this,AddTravelActivity.class);
+                int i = 0;
+                for(GeoPoint geoPoint:freePoints){
+                    intent.putExtra("lat"+i,geoPoint.getLat());
+                    intent.putExtra("lon"+i,geoPoint.getLon());
+                    i++;
+                }
+                intent.putExtra("count",freePoints.size());
                 startActivityForResult(intent,ADD_TRAVEL_CODE);
                 break;
             }
@@ -277,6 +288,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     break;
                 }
                 case ADD_TRAVEL_CODE:{
+                    GeoPoint fromPoint = new GeoPoint(data.getDoubleExtra("fromPointLat",0.0),data.getDoubleExtra("fromPointLon",0.0));
+                    GeoPoint toPoint = new GeoPoint(data.getDoubleExtra("toPointLat",0.0),data.getDoubleExtra("toPointLon",0.0));
+                    int color = data.getIntExtra("color",0);
+                    Travel travel = new Travel(fromPoint,toPoint,"",color);
+                    GeoPoint removedFrom = null;
+                    GeoPoint removedTo = null;
+                    travels.add(travel);
+                    for (GeoPoint point:freePoints){
+                        if (point.getLat()==fromPoint.getLat()){
+                            removedFrom = point;
+                        }
+                    }
+                    for (GeoPoint point:freePoints){
+                        if (point.getLat()==toPoint.getLat()){
+                            removedTo = point;
+                        }
+                    }
+                    freePoints.remove(removedFrom);
+                    freePoints.remove(removedTo);
+                    overlayRect = new OverlayRect(mMapController);
+                    mMapController.getOverlayManager().addOverlay(overlayRect);
                     break;
                 }
                 case REMOVE_TRAVEL_CODE:{
