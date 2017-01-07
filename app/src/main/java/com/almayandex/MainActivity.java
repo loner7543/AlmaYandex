@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private List<GeoPoint> freePoints;//вне путешествия
     private List<Travel> travels;
     private OverlayRect overlayRect;//для рисования пути на карте
+    private List<OverlayRect> pathRectItems;//все обыекты OverlayRectItem которые использовались для рисования пути
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         imageSpinner.setSelection(1);//  TODO захардкодил пока
         freePoints = new LinkedList<>();
         travels = new LinkedList<>();
+        pathRectItems = new LinkedList<>();
     }
 
     @Override
@@ -292,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             }
                         }
                         overlayItems.remove(removedSl);//удалил элемнет слооя(точку с самой карты)
-                        UpdateMap();//вернул оставшиеся точки на слой
+                        currentOverlay.removeOverlayItem(removedSl);//Удалил слой
                     }
                     catch (Exception e){
                         Log.d(TAG,"Ошибка при удалении точки");
@@ -321,12 +323,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     freePoints.remove(removedFrom);
                     freePoints.remove(removedTo);
                     overlayRect = new OverlayRect(mMapController,travel);
-                    mMapController.getOverlayManager().addOverlay(overlayRect);
+                    pathRectItems.add(overlayRect);
+                    mMapController.getOverlayManager().addOverlay(overlayRect);//каждый раз новое пут - это новый слой
                     break;
                 }
                 case REMOVE_TRAVEL_CODE:{
                     double lat = data.getDoubleExtra("fromPointLat",0.0);
-                    String d = "";
+                    Travel removed = null;
+                    for (Travel travel:travels){
+                        if (travel.getStartPoint().getLat()==lat){
+                            removed = travel;
+                        }
+                    }
+                    freePoints.add(removed.getStartPoint());
+                    freePoints.add(removed.getEndPoint());
+                    travels.remove(removed);
+                    OverlayRect removedRect = null;
+                    for (OverlayRect rect:pathRectItems){
+                        if (rect.getTravel()==removed){
+                            removedRect = rect;
+                        }
+                    }
+                    mMapController.getOverlayManager().removeOverlay(removedRect);
                     break;
                 }
                 default:{
@@ -336,9 +354,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    // TODO Сама она не обновляетс после удаления
+    // TODO Пока не используется
     public void UpdateMap(){
-        currentOverlay.clearOverlayItems();
+        currentOverlay.clearOverlayItems();////выборочно удалять точки
         OverlayItem overlayItem;
         for (GeoPoint data:freePoints){
             overlayItem = new OverlayItem(data,new BitmapDrawable(getResources(),selectedMarker));

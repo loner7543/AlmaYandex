@@ -11,7 +11,9 @@ import ru.yandex.yandexmapkit.utils.ScreenPoint;
 /**
  * Created by Александр on 03.01.2017.
  */
-
+/*
+* геоточка и соотв ей точка на экране
+* */
 public class OverlayRectItem extends OverlayItem {
    public   ArrayList<GeoPoint> geoPoint = new ArrayList<GeoPoint>();
     public ArrayList<ScreenPoint> screenPoint = new ArrayList<ScreenPoint>();

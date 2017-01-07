@@ -22,7 +22,7 @@
             android:layout_below="@+id/header"
             android:id="@+id/travels_list"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"></ListView>
+            android:layout_height="400dp"></ListView>
         <Button
             android:id="@+id/deleteTravelBtn"
             android:layout_below="@+id/travels_list"
