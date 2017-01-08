@@ -29,5 +29,13 @@
             android:text="Удалить путешевствие"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/viewPoints"
+            android:layout_below="@+id/travels_list"
+            android:onClick="onViewTravelPoints"
+            android:layout_toRightOf="@id/deleteTravelBtn"
+            android:text="Посмотреть точки"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
     </RelativeLayout>
 </android.support.v4.widget.NestedScrollView>

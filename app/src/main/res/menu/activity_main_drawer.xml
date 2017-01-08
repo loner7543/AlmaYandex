@@ -22,6 +22,12 @@
             android:id="@+id/add_travel"
             android:title="Добавить путешевствие">
         </item>
+        <item
+            android:id="@+id/from_current_location"
+            android:title="Точки рядом с текущим местоположением"
+            >
+
+        </item>
     </group>
 
 </menu>

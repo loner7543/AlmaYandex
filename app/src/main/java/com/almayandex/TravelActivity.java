@@ -62,6 +62,15 @@ public class TravelActivity extends AppCompatActivity implements AdapterView.OnI
     public void onClick(View view) {
         intent = new Intent();
         intent.putExtra("fromPointLat",selectegTravel.getStartPoint().getLat());
+        intent.putExtra("flag",true);
+        setResult(RESULT_OK,intent);
+        finish();
+    }
+
+    public void onViewTravelPoints(View view){
+        intent = new Intent();
+        intent.putExtra("fromPointLat",selectegTravel.getStartPoint().getLat());
+        intent.putExtra("flag",false);
         setResult(RESULT_OK,intent);
         finish();
     }

@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Overlay currentOverlay;
     private OverlayManager overlayManager;
     private OverlayItem overlayItem;
-    private GeoPoint geoPoint;
+    private GeoPoint currentLocation;
     private Geocoder geocoder;
     private Address address;
     private Intent intent;
@@ -181,6 +181,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             }
             case R.id.add_curr_location:{
+                GeoPoint geoPoint = null;
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                         && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     Toast toast = Toast.makeText(this,"Включите Геолокацию",Toast.LENGTH_LONG);
@@ -190,7 +191,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 else {
                     Location location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
                     if (location != null) {
-                        GeoPoint geoPoint = new GeoPoint(location.getLatitude(),location.getLongitude());
+                        geoPoint = new GeoPoint(location.getLatitude(),location.getLongitude());
+                        this.currentLocation = geoPoint;
                         overlayItem = new OverlayItem(geoPoint,context.getResources().getDrawable(R.drawable.a));//TODO пока захардкодил иконку
                         currentOverlay.addOverlayItem(overlayItem);//
                         mMapController.getOverlayManager().addOverlay(currentOverlay);//TODO не уверен что нужно добавлять  новый слой
@@ -225,6 +227,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 intent.putExtra("count",freePoints.size());
                 startActivityForResult(intent,ADD_TRAVEL_CODE);
+                break;
+            }
+            case R.id.from_current_location:{//точки рядом с текущим местоположением
+                if (currentLocation==null){
+                    Toast toast = Toast.makeText(this,"Необходимо определить текущее местоположение",Toast.LENGTH_LONG);
+                    toast.show();
+                }
+                else {
+
+                }
                 break;
             }
         }
@@ -285,16 +297,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 removedPoint =tmp;
                             }
                         }
-                        freePoints.remove(removedPoint);//удалил из списка свободных точек
-                        OverlayItem removedItem = new OverlayItem(removedPoint,null);
-                        List<OverlayItem> overlayItems = currentOverlay.getOverlayItems();
-                        for (OverlayItem item:overlayItems){
-                            if (item.getGeoPoint().getLat()==removedItem.getGeoPoint().getLat()){
-                                removedSl = item;
-                            }
-                        }
-                        overlayItems.remove(removedSl);//удалил элемнет слооя(точку с самой карты)
-                        currentOverlay.removeOverlayItem(removedSl);//Удалил слой
+                        removeFreePoint(removedPoint);
                     }
                     catch (Exception e){
                         Log.d(TAG,"Ошибка при удалении точки");
@@ -328,23 +331,46 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     break;
                 }
                 case REMOVE_TRAVEL_CODE:{
-                    double lat = data.getDoubleExtra("fromPointLat",0.0);
-                    Travel removed = null;
-                    for (Travel travel:travels){
-                        if (travel.getStartPoint().getLat()==lat){
-                            removed = travel;
+                    boolean flag = data.getBooleanExtra("flag",false);
+                    if (flag){
+                        double lat = data.getDoubleExtra("fromPointLat",0.0);
+                        Travel removed = null;
+                        for (Travel travel:travels){
+                            if (travel.getStartPoint().getLat()==lat){
+                                removed = travel;
+                            }
+                        }
+                        freePoints.add(removed.getStartPoint());
+                        freePoints.add(removed.getEndPoint());
+                        travels.remove(removed);
+                        OverlayRect removedRect = null;
+                        for (OverlayRect rect:pathRectItems){
+                            if (rect.getTravel()==removed){
+                                removedRect = rect;
+                            }
+                        }
+                        mMapController.getOverlayManager().removeOverlay(removedRect);
+                    }
+                    else {
+                        double fromPointLat = data.getDoubleExtra("fromPointLat",0.0);
+                        Travel selectedTRavel = null;
+                        for (Travel travel:travels){
+                            if (travel.getStartPoint().getLat()==fromPointLat){
+                                selectedTRavel = travel;
+                            }
+                        }
+                        for (int i = 0;i<pathRectItems.size();i++){
+                            if (pathRectItems.get(i).getTravel()==selectedTRavel){
+                                continue;
+                            }
+                            else {
+                                pathRectItems.remove(pathRectItems.get(i));
+                                mMapController.getOverlayManager().removeOverlay(pathRectItems.get(i));
+                                removeFreePoint(pathRectItems.get(i).getTravel().getEndPoint());//удалили 2 точки от путешевствия т.к. они стали свободными
+                                removeFreePoint(pathRectItems.get(i).getTravel().getStartPoint());
+                            }
                         }
                     }
-                    freePoints.add(removed.getStartPoint());
-                    freePoints.add(removed.getEndPoint());
-                    travels.remove(removed);
-                    OverlayRect removedRect = null;
-                    for (OverlayRect rect:pathRectItems){
-                        if (rect.getTravel()==removed){
-                            removedRect = rect;
-                        }
-                    }
-                    mMapController.getOverlayManager().removeOverlay(removedRect);
                     break;
                 }
                 default:{
@@ -352,6 +378,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
         }
+    }
+
+    private void removeFreePoint(GeoPoint removedPoint) {
+        OverlayItem removedSl =null ;
+        freePoints.remove(removedPoint);//удалил из списка свободных точек
+        OverlayItem removedItem = new OverlayItem(removedPoint,null);
+        List<OverlayItem> overlayItems = currentOverlay.getOverlayItems();
+        for (OverlayItem item:overlayItems){
+            if (item.getGeoPoint().getLat()==removedItem.getGeoPoint().getLat()){
+                removedSl = item;
+            }
+        }
+        overlayItems.remove(removedSl);//удалил элемнет слооя(точку с самой карты)
+        currentOverlay.removeOverlayItem(removedSl);//Удалил слой
     }
 
     // TODO Пока не используется
