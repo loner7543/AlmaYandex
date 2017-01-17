@@ -14,6 +14,7 @@ import ru.yandex.yandexmapkit.utils.GeoPoint;
 public class MyPoint {
     private GeoPoint geoPoint;
     private List<Bitmap> photos;
+    private String description;
 
     public MyPoint( GeoPoint geoPoint) {
        photos = new LinkedList<>();
@@ -34,5 +35,13 @@ public class MyPoint {
 
     public void setPhotos(List<Bitmap> photos) {
         this.photos = photos;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

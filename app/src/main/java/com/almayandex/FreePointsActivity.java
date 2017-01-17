@@ -1,14 +1,19 @@
 package com.almayandex;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.provider.MediaStore;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.almayandex.adapters.PointsAdapter;
 
@@ -66,6 +71,34 @@ public class FreePointsActivity extends AppCompatActivity implements AdapterView
     public void  onAddPhoto(View view){
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(cameraIntent, CAMERA_RESULT_ADD);
+    }
+
+    public void onAddDescription(View view){
+        LayoutInflater layoutInflater = LayoutInflater.from(FreePointsActivity.this);
+        View promptView = layoutInflater.inflate(R.layout.edit_dialog, null);
+        final EditText editText = (EditText) promptView.findViewById(R.id.point_desc);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(FreePointsActivity.this);
+        alertDialogBuilder.setTitle("Введите описание для точки");
+        alertDialogBuilder.setView(promptView);
+        alertDialogBuilder.setCancelable(false)
+                .setNegativeButton("Ok",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                String text = editText.getText().toString();
+                                MyPoint goal = null;
+                                for (MyPoint myPoint:pointsAdapter.getData())
+                                {
+                                    if (myPoint.getGeoPoint()==selectedItem.getGeoPoint()){
+                                        goal = myPoint;
+                                    }
+                                }
+                                goal.setDescription(text);
+                                pointsAdapter.notifyDataSetChanged();
+                                dialog.cancel();
+                            }
+                        });
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.show();
     }
 
     @Override

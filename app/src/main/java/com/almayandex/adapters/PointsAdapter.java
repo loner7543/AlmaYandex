@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -77,6 +78,11 @@ public class PointsAdapter extends BaseAdapter {
         }
         TextView lat = (TextView) row.findViewById(R.id.Latitude_text);
         TextView lon = (TextView) row.findViewById(R.id.Longitude_text);
+        TextView descText = (TextView) row.findViewById(R.id.point_description);
+        String desc = myPoint.getDescription();
+        if (desc!=null){
+            descText.setText(myPoint.getDescription());
+        }
         String adminArea = addr.getAdminArea();
         if (adminArea==null)
         {

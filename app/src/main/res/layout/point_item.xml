@@ -13,8 +13,14 @@
         android:layout_width="wrap_content"
         android:layout_marginBottom="10dp"
         android:layout_height="wrap_content" />
-    <LinearLayout
+    <TextView
+        android:text="Some text...."
+        android:id="@+id/point_description"
         android:layout_below="@+id/Longitude_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:layout_below="@+id/point_description"
         android:id="@+id/photos_layout"
         android:orientation="horizontal"
         android:layout_width="wrap_content"
