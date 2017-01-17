@@ -35,6 +35,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -234,7 +235,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Toast toast = Toast.makeText(this,"Необходимо определить текущее местоположение",Toast.LENGTH_LONG);
                     toast.show();
                 }
-                else {
+                else {//считаем  для каждого пут расстояние между текущим местоположением и точкой начала пут и берем минимальное
+                    OverlayRect removedRect = null;
+                    float[] results = new float[5];
+                    ArrayList<TravelDistance> deltaList = new ArrayList<>(travels.size());
+                    for (Travel travel:travels){
+                        Location.distanceBetween(currentLocation.getLat(),currentLocation.getLon(),travel.getStartPoint().getLat(),travel.getStartPoint().getLon(),results);
+                        TravelDistance travelDistance = new TravelDistance(travel,(double) results[0]);
+                        deltaList.add(travelDistance);
+                    }
+                    TravelDistance resTravelDist = deltaList.get(0);
+                    for (TravelDistance elem:deltaList){
+                        if (elem.getDistance()<resTravelDist.getDistance()){
+                            resTravelDist = elem;
+                        }
+                    }
+                    //удаляю с карты все пут кроме найденного
+                    for (Travel travel:travels){
+                        if (resTravelDist.getTravel()!=travel){
+                            freePoints.add(travel.getStartPoint());
+                            freePoints.add(travel.getEndPoint());
+                            travels.remove(travel);
+
+                            for (OverlayRect rect:pathRectItems){
+                                if (rect.getTravel()==travel){
+                                    removedRect = rect;
+                                }
+                            }
+                            mMapController.getOverlayManager().removeOverlay(removedRect);
+                        }
+
+                    }
 
                 }
                 break;
