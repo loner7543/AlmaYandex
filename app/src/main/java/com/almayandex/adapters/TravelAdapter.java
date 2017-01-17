@@ -59,10 +59,10 @@ public class TravelAdapter extends BaseAdapter {
         Travel currMeet = getPhoto(i);
         row = layoutInflater.inflate(LayResId,viewGroup,false);
         try {
-            fromAaddress = geocoder.getFromLocation(currMeet.getStartPoint().getLat(),currMeet.getStartPoint().getLon(),1);
+            fromAaddress = geocoder.getFromLocation(currMeet.getStartPoint().getGeoPoint().getLat(),currMeet.getStartPoint().getGeoPoint().getLon(),1);
             fromAddr = fromAaddress.get(0);
 
-            toAddressList = geocoder.getFromLocation(currMeet.getEndPoint().getLat(),currMeet.getEndPoint().getLon(),1);
+            toAddressList = geocoder.getFromLocation(currMeet.getEndPoint().getGeoPoint().getLat(),currMeet.getEndPoint().getGeoPoint().getLon(),1);
             toAddress = toAddressList.get(0);
         } catch (IOException e) {
             e.printStackTrace();

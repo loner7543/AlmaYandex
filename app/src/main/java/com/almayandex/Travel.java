@@ -7,12 +7,12 @@ import ru.yandex.yandexmapkit.utils.GeoPoint;
  */
 
 public class Travel {
-    private GeoPoint startPoint;
-    private GeoPoint endPoint;
+    private MyPoint startPoint;
+    private MyPoint endPoint;
     private String title;
     private int color;
 
-    public Travel(GeoPoint startPoint, GeoPoint endPoint, String title, int c) {
+    public Travel(MyPoint startPoint, MyPoint endPoint, String title, int c) {
         this.startPoint = startPoint;
         this.endPoint = endPoint;
         this.title = title;
@@ -30,19 +30,19 @@ public class Travel {
         this.title = title;
     }
 
-    public GeoPoint getEndPoint() {
+    public MyPoint getEndPoint() {
         return endPoint;
     }
 
-    public void setEndPoint(GeoPoint endPoint) {
+    public void setEndPoint(MyPoint endPoint) {
         this.endPoint = endPoint;
     }
 
-    public GeoPoint getStartPoint() {
+    public MyPoint getStartPoint() {
         return startPoint;
     }
 
-    public void setStartPoint(GeoPoint startPoint) {
+    public void setStartPoint(MyPoint startPoint) {
         this.startPoint = startPoint;
     }
 

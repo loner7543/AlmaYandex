@@ -1,16 +1,21 @@
 package com.almayandex.adapters;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.almayandex.MyPoint;
 import com.almayandex.R;
 
 import java.io.IOException;
@@ -19,12 +24,14 @@ import java.util.Locale;
 
 import ru.yandex.yandexmapkit.utils.GeoPoint;
 
+import static android.os.Build.VERSION_CODES.M;
+
 /**
  * Created by Александр on 01.01.2017.
  */
 
 public class PointsAdapter extends BaseAdapter {
-    private List<GeoPoint> data;
+    private List<MyPoint> data;
     private LayoutInflater layoutInflater;
     private Context ctx;
     private  int LayResId;
@@ -33,7 +40,7 @@ public class PointsAdapter extends BaseAdapter {
     private Address addr;
 
 
-    public PointsAdapter(Context context, int resource, List<GeoPoint> objects) {
+    public PointsAdapter(Context context, int resource, List<MyPoint> objects) {
         this.ctx =context;
         this.LayResId = resource;
         this.data = objects;
@@ -46,7 +53,7 @@ public class PointsAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int i) {
+    public MyPoint getItem(int i) {
         return  data.get(i);
     }
 
@@ -59,7 +66,8 @@ public class PointsAdapter extends BaseAdapter {
     public View getView(int i, View view, ViewGroup viewGroup) {
         View row = view;
         row = layoutInflater.inflate(LayResId,viewGroup,false);
-        GeoPoint point = getCurrentPoint(i);
+        MyPoint myPoint = getCurrentPoint(i);
+        GeoPoint point = getCurrentPoint(i).getGeoPoint();
         try {
             address = geocoder.getFromLocation(point.getLat(),point.getLon(),1);
             addr = address.get(0);
@@ -84,10 +92,26 @@ public class PointsAdapter extends BaseAdapter {
         else {
             lon.setText(addr.getThoroughfare()+", "+addr.getSubThoroughfare());
         }
+        LinearLayout linearLayout = (LinearLayout) row.findViewById(R.id.photos_layout);
+        for (Bitmap photo:myPoint.getPhotos()){
+            ImageView imageView = new ImageView(ctx);
+            imageView.setImageBitmap(photo);
+            imageView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT));
+            linearLayout.addView(imageView);
+        }
         return row;
     }
 
-    public GeoPoint getCurrentPoint(int Position){
-        return (GeoPoint) getItem(Position);
+    public MyPoint getCurrentPoint(int Position){
+        return (MyPoint) getItem(Position);
+    }
+
+    @Override
+    public View getDropDownView(int position, View convertView, ViewGroup parent) {
+        return super.getDropDownView(position, convertView, parent);
+    }
+
+    public List<MyPoint> getData() {
+        return data;
     }
 }

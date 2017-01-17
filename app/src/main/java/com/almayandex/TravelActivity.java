@@ -19,8 +19,8 @@ import ru.yandex.yandexmapkit.utils.GeoPoint;
 public class TravelActivity extends AppCompatActivity implements AdapterView.OnItemClickListener,View.OnClickListener {
     private Intent intent;
     private Travel selectegTravel;
-    private GeoPoint fromPoint;
-    private GeoPoint toPoint;
+    private MyPoint fromPoint;
+    private MyPoint toPoint;
     private List<Travel> data;
     private int count;
     private int color;
@@ -41,9 +41,9 @@ public class TravelActivity extends AppCompatActivity implements AdapterView.OnI
         count = intent.getIntExtra("count",100);
         for (int i = 0;i<count;i++){
             name = intent.getStringExtra("name"+i);
-            color = intent.getIntExtra("color"+i,0);
-            fromPoint = new GeoPoint(intent.getDoubleExtra("fromLat"+i,0.0),intent.getDoubleExtra("fromLon"+i,0.0));//(lat,lon)
-            toPoint = new GeoPoint(intent.getDoubleExtra("toLat"+i,0.0),intent.getDoubleExtra("toLon"+i,0.0));//(lat,lon)
+            color = intent.getIntExtra("color"+i,0);//(lat,lon))
+            fromPoint = new MyPoint(new GeoPoint(intent.getDoubleExtra("fromLat"+i,0.0),intent.getDoubleExtra("fromLon"+i,0.0)));
+            toPoint = new MyPoint(new GeoPoint(intent.getDoubleExtra("toLat"+i,0.0),intent.getDoubleExtra("toLon"+i,0.0))); //(lat,lon)
             data.add(new Travel(fromPoint,toPoint,name,color));
         }
         adapter = new TravelAdapter(this,R.layout.travel_item,data);
@@ -61,7 +61,7 @@ public class TravelActivity extends AppCompatActivity implements AdapterView.OnI
     @Override
     public void onClick(View view) {
         intent = new Intent();
-        intent.putExtra("fromPointLat",selectegTravel.getStartPoint().getLat());
+        intent.putExtra("fromPointLat",selectegTravel.getStartPoint().getGeoPoint().getLat());
         intent.putExtra("flag",true);
         setResult(RESULT_OK,intent);
         finish();
@@ -69,7 +69,7 @@ public class TravelActivity extends AppCompatActivity implements AdapterView.OnI
 
     public void onViewTravelPoints(View view){
         intent = new Intent();
-        intent.putExtra("fromPointLat",selectegTravel.getStartPoint().getLat());
+        intent.putExtra("fromPointLat",selectegTravel.getStartPoint().getGeoPoint().getLat());
         intent.putExtra("flag",false);
         setResult(RESULT_OK,intent);
         finish();

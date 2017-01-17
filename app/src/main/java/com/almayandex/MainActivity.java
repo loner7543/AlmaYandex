@@ -36,6 +36,7 @@ import com.google.android.gms.location.LocationServices;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -76,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Bitmap selectedMarker;
     private BitmapDrawable res;
     private GoogleApiClient googleApiClient;
-    private List<GeoPoint> freePoints;//вне путешествия
+    private List<MyPoint> freePoints;//вне путешествия
     private List<Travel> travels;
     private OverlayRect overlayRect;//для рисования пути на карте
     private List<OverlayRect> pathRectItems;//все обыекты OverlayRectItem которые использовались для рисования пути
@@ -166,11 +167,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 for (Travel travel:travels){
                     intent.putExtra("name"+i,travel.getTitle());
                     intent.putExtra("color"+i,travel.getColor());
-                    intent.putExtra("fromLat"+i,travel.getStartPoint().getLat());
-                    intent.putExtra("fromLon"+i,travel.getStartPoint().getLon());
+                    intent.putExtra("fromLat"+i,travel.getStartPoint().getGeoPoint().getLat());
+                    intent.putExtra("fromLon"+i,travel.getStartPoint().getGeoPoint().getLon());
 
-                    intent.putExtra("toLat"+i,travel.getEndPoint().getLat());
-                    intent.putExtra("toLon"+i,travel.getEndPoint().getLon());
+                    intent.putExtra("toLat"+i,travel.getEndPoint().getGeoPoint().getLat());
+                    intent.putExtra("toLon"+i,travel.getEndPoint().getGeoPoint().getLon());
                     i++;
                 }
                 startActivityForResult(intent,REMOVE_TRAVEL_CODE);
@@ -197,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         overlayItem = new OverlayItem(geoPoint,context.getResources().getDrawable(R.drawable.a));//TODO пока захардкодил иконку
                         currentOverlay.addOverlayItem(overlayItem);//
                         mMapController.getOverlayManager().addOverlay(currentOverlay);//TODO не уверен что нужно добавлять  новый слой
-                        freePoints.add(geoPoint);
+                        freePoints.add(new MyPoint(geoPoint));
                     }
                     else {
                         Toast toast = Toast.makeText(this,"Включите Геолокацию",Toast.LENGTH_LONG);
@@ -209,9 +210,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.free_points_show:{
                 intent = new Intent(this,FreePointsActivity.class);
                 int i = 0;
-                for (GeoPoint geoPoint:freePoints){
-                    intent.putExtra("lat"+i, geoPoint.getLat());
-                    intent.putExtra("lon"+i,geoPoint.getLon());
+                for (MyPoint geoPoint:freePoints){
+                    intent.putExtra("lat"+i, geoPoint.getGeoPoint().getLat());
+                    intent.putExtra("lon"+i,geoPoint.getGeoPoint().getLon());
                     i++;
                 }
                 intent.putExtra("count",freePoints.size());
@@ -221,9 +222,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.add_travel:{
                 intent = new Intent(this,AddTravelActivity.class);
                 int i = 0;
-                for(GeoPoint geoPoint:freePoints){
-                    intent.putExtra("lat"+i,geoPoint.getLat());
-                    intent.putExtra("lon"+i,geoPoint.getLon());
+                for(MyPoint geoPoint:freePoints){
+                    intent.putExtra("lat"+i,geoPoint.getGeoPoint().getLat());
+                    intent.putExtra("lon"+i,geoPoint.getGeoPoint().getLon());
                     i++;
                 }
                 intent.putExtra("count",freePoints.size());
@@ -231,6 +232,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             }
             case R.id.from_current_location:{//точки рядом с текущим местоположением
+                try {
                 if (currentLocation==null){
                     Toast toast = Toast.makeText(this,"Необходимо определить текущее местоположение",Toast.LENGTH_LONG);
                     toast.show();
@@ -240,7 +242,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     float[] results = new float[5];
                     ArrayList<TravelDistance> deltaList = new ArrayList<>(travels.size());
                     for (Travel travel:travels){
-                        Location.distanceBetween(currentLocation.getLat(),currentLocation.getLon(),travel.getStartPoint().getLat(),travel.getStartPoint().getLon(),results);
+                        Location.distanceBetween(currentLocation.getLat(),
+                                currentLocation.getLon(),travel.getStartPoint().getGeoPoint().getLat(),travel.getStartPoint().getGeoPoint().getLon(),results);
                         TravelDistance travelDistance = new TravelDistance(travel,(double) results[0]);
                         deltaList.add(travelDistance);
                     }
@@ -267,6 +270,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     }
 
+                }
+                }
+                catch (ConcurrentModificationException e){
+                   Toast toast =  Toast.makeText(this,"ОШибка доступа к коллекции",Toast.LENGTH_LONG);
+                    toast.show();
                 }
                 break;
             }
@@ -319,11 +327,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                  * */
                 case FREE_POINTS_CODE:{
                     try {
-                        GeoPoint removedPoint = null;
+                        MyPoint removedPoint = null;
                         OverlayItem removedSl = null;
                         GeoPoint geoPoint = new GeoPoint(data.getDoubleExtra("lat",0.0),data.getDoubleExtra("lon",0.0));
-                        for (GeoPoint tmp:freePoints){
-                            if (tmp.getLat()==geoPoint.getLat())
+                        for (MyPoint tmp:freePoints){
+                            if (tmp.getGeoPoint().getLat()==geoPoint.getLat())
                             {
                                 removedPoint =tmp;
                             }
@@ -340,17 +348,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     GeoPoint toPoint = new GeoPoint(data.getDoubleExtra("toPointLat",0.0),data.getDoubleExtra("toPointLon",0.0));
                     int color = data.getIntExtra("color",0);
                     String travel_name = data.getStringExtra("travel_name");
-                    Travel travel = new Travel(fromPoint,toPoint,travel_name,color);
-                    GeoPoint removedFrom = null;
-                    GeoPoint removedTo = null;
+                    Travel travel = new Travel(new MyPoint(fromPoint),new MyPoint(toPoint),travel_name,color);
+                    MyPoint removedFrom = null;
+                    MyPoint removedTo = null;
                     travels.add(travel);
-                    for (GeoPoint point:freePoints){
-                        if (point.getLat()==fromPoint.getLat()){
+                    for (MyPoint point:freePoints){
+                        if (point.getGeoPoint().getLat()==fromPoint.getLat()){
                             removedFrom = point;
                         }
                     }
-                    for (GeoPoint point:freePoints){
-                        if (point.getLat()==toPoint.getLat()){
+                    for (MyPoint point:freePoints){
+                        if (point.getGeoPoint().getLat()==toPoint.getLat()){
                             removedTo = point;
                         }
                     }
@@ -367,7 +375,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         double lat = data.getDoubleExtra("fromPointLat",0.0);
                         Travel removed = null;
                         for (Travel travel:travels){
-                            if (travel.getStartPoint().getLat()==lat){
+                            if (travel.getStartPoint().getGeoPoint().getLat()==lat){
                                 removed = travel;
                             }
                         }
@@ -386,7 +394,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         double fromPointLat = data.getDoubleExtra("fromPointLat",0.0);
                         Travel selectedTRavel = null;
                         for (Travel travel:travels){
-                            if (travel.getStartPoint().getLat()==fromPointLat){
+                            if (travel.getStartPoint().getGeoPoint().getLat()==fromPointLat){
                                 selectedTRavel = travel;
                             }
                         }
@@ -395,10 +403,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 continue;
                             }
                             else {
-                                pathRectItems.remove(pathRectItems.get(i));
+                                OverlayRect removed = pathRectItems.get(i);//сохранил отдельно, чтобы отдельно удалить освободивштеся точки
                                 mMapController.getOverlayManager().removeOverlay(pathRectItems.get(i));
-                                removeFreePoint(pathRectItems.get(i).getTravel().getEndPoint());//удалили 2 точки от путешевствия т.к. они стали свободными
-                                removeFreePoint(pathRectItems.get(i).getTravel().getStartPoint());
+                                pathRectItems.remove(pathRectItems.get(i));
+                                removeFreePoint(removed.getTravel().getEndPoint());//удалили 2 точки от путешевствия т.к. они стали свободными
+                                removeFreePoint(removed.getTravel().getStartPoint());
                             }
                         }
                     }
@@ -411,10 +420,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private void removeFreePoint(GeoPoint removedPoint) {
+    private void removeFreePoint(MyPoint removedPoint) {
         OverlayItem removedSl =null ;
         freePoints.remove(removedPoint);//удалил из списка свободных точек
-        OverlayItem removedItem = new OverlayItem(removedPoint,null);
+        OverlayItem removedItem = new OverlayItem(removedPoint.getGeoPoint(),null);
         List<OverlayItem> overlayItems = currentOverlay.getOverlayItems();
         for (OverlayItem item:overlayItems){
             if (item.getGeoPoint().getLat()==removedItem.getGeoPoint().getLat()){
@@ -425,27 +434,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         currentOverlay.removeOverlayItem(removedSl);//Удалил слой
     }
 
-    // TODO Пока не используется
-    public void UpdateMap(){
-        currentOverlay.clearOverlayItems();////выборочно удалять точки
-        OverlayItem overlayItem;
-        for (GeoPoint data:freePoints){
-            overlayItem = new OverlayItem(data,new BitmapDrawable(getResources(),selectedMarker));
-            currentOverlay.addOverlayItem(overlayItem);
-        }
-    }
-    /*
-    * отображает на карте только точки путешевствия
-    * */
-    public void setTravelPoints(Travel travel){
-        currentOverlay.clearOverlayItems();
-        OverlayItem overlayItem;
-        overlayItem = new OverlayItem(travel.getStartPoint(),new BitmapDrawable(getResources(),selectedMarker));
-        currentOverlay.addOverlayItem(overlayItem);
-
-        overlayItem = new OverlayItem(travel.getEndPoint(),new BitmapDrawable(getResources(),selectedMarker));
-        currentOverlay.addOverlayItem(overlayItem);
-    }
 
     public void initMarkers(){
         markers = new LinkedList<>();

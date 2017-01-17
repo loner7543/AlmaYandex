@@ -26,9 +26,9 @@ public class AddTravelActivity extends AppCompatActivity implements View.OnClick
     private Spinner toPointSpinner;
     private  int color;
     private Button addTravelBtn;
-    private List<GeoPoint> travelsPoints;//список свободных точек из которых будем делать путешевствия
-    private GeoPoint fromPoint;
-    private GeoPoint toPoint;
+    private List<MyPoint> travelsPoints;//список свободных точек из которых будем делать путешевствия
+    private MyPoint fromPoint;
+    private MyPoint toPoint;
     private Intent intent;
     private PointsAdapter pointsAdapter;
     private int count;
@@ -45,7 +45,7 @@ public class AddTravelActivity extends AppCompatActivity implements View.OnClick
         count = intent.getIntExtra("count",100);
         travelsPoints = new LinkedList<>();
         for (int i = 0;i<count;i++){
-            travelsPoints.add(new GeoPoint(intent.getDoubleExtra("lat"+i,0.0),intent.getDoubleExtra("lon"+i,0.0)));
+            travelsPoints.add(new MyPoint(new GeoPoint(intent.getDoubleExtra("lat"+i,0.0),intent.getDoubleExtra("lon"+i,0.0))));
         }
         pointsAdapter = new PointsAdapter(this,R.layout.point_item,travelsPoints);
         addTravelBtn = (Button) findViewById(R.id.onSend);
@@ -55,7 +55,7 @@ public class AddTravelActivity extends AppCompatActivity implements View.OnClick
         fromPointSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                fromPoint = (GeoPoint) adapterView.getSelectedItem();
+                fromPoint = (MyPoint) adapterView.getSelectedItem();
             }
 
             @Override
@@ -67,7 +67,7 @@ public class AddTravelActivity extends AppCompatActivity implements View.OnClick
         toPointSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                toPoint = (GeoPoint) adapterView.getSelectedItem();
+                toPoint = (MyPoint) adapterView.getSelectedItem();
             }
 
             @Override
@@ -107,11 +107,11 @@ public class AddTravelActivity extends AppCompatActivity implements View.OnClick
     @Override
     public void onClick(View view) {
         intent = new Intent();
-        intent.putExtra("fromPointLat",fromPoint.getLat());
-        intent.putExtra("fromPointLon",fromPoint.getLon());
+        intent.putExtra("fromPointLat",fromPoint.getGeoPoint().getLat());
+        intent.putExtra("fromPointLon",fromPoint.getGeoPoint().getLon());
 
-        intent.putExtra("toPointLat",toPoint.getLat());
-        intent.putExtra("toPointLon",toPoint.getLon());
+        intent.putExtra("toPointLat",toPoint.getGeoPoint().getLat());
+        intent.putExtra("toPointLon",toPoint.getGeoPoint().getLon());
 
         intent.putExtra("color",color);
         intent.putExtra("travel_name",travelNameEdit.getText().toString());

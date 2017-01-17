@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 
+import com.almayandex.MyPoint;
 import com.almayandex.R;
 
 import java.util.List;
@@ -27,9 +28,9 @@ public class OverlayGeoCode extends Overlay implements GeoCodeListener {
     private MapController controller;
     private Context ctx;
     private BitmapDrawable bitmapDrawable;
-    private List<GeoPoint> points;
+    private List<MyPoint> points;
 
-    public OverlayGeoCode(MapController mapController, Context context,Overlay ov,BitmapDrawable drawable,List<GeoPoint> p) {
+    public OverlayGeoCode(MapController mapController, Context context,Overlay ov,BitmapDrawable drawable,List<MyPoint> p) {
         super(mapController);
         this.controller = mapController;
         this.ctx = context;
@@ -70,7 +71,7 @@ public class OverlayGeoCode extends Overlay implements GeoCodeListener {
                     overlayItem = new OverlayItem(geoPoint,bitmapDrawable);
                     overlay.addOverlayItem(overlayItem);
                     controller.getOverlayManager().addOverlay(overlay);
-                    points.add(geoPoint);
+                    points.add(new MyPoint(geoPoint));
                 }
             });
         }

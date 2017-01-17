@@ -19,5 +19,12 @@
         android:text="Удалить точку"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+    <Button
+        android:id="@+id/addPhoto"
+        android:layout_below="@+id/removeBtn"
+        android:text="Добавить фото"
+        android:onClick="onAddPhoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </RelativeLayout>

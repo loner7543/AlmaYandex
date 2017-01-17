@@ -31,8 +31,8 @@ public class OverlayRect extends Overlay {
         rectRender = new RectRender(travel);
         setIRender(rectRender);
         overlayRectItem = new OverlayRectItem(new GeoPoint(0,0), mContext.getResources().getDrawable(android.R.drawable.btn_star));
-        overlayRectItem.geoPoint.add(travel.getStartPoint());
-        overlayRectItem.geoPoint.add(travel.getEndPoint());
+        overlayRectItem.geoPoint.add(travel.getStartPoint().getGeoPoint());
+        overlayRectItem.geoPoint.add(travel.getEndPoint().getGeoPoint());
         addOverlayItem(overlayRectItem);
     }
 
