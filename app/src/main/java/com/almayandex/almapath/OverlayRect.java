@@ -42,7 +42,6 @@ public class OverlayRect extends Overlay {
 
     @Override
     public List prepareDraw() {
-        // TODO Auto-generated method stub
         ArrayList<OverlayItem> draw = new ArrayList<OverlayItem>();
         overlayRectItem.screenPoint.clear();
         for( GeoPoint point : overlayRectItem.geoPoint){

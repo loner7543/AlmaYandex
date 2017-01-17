@@ -1,22 +1,51 @@
 package com.almayandex.adapters;
 
+import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
+
+import com.almayandex.R;
+import com.almayandex.Travel;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Александр on 03.01.2017.
  */
 
 public class TravelAdapter extends BaseAdapter {
+    private List<Travel> data;
+    private LayoutInflater layoutInflater;
+    private Context ctx;
+    private  int LayResId;
+    private Geocoder geocoder;
+    private List<Address> fromAaddress;
+    private Address fromAddr;
+    private List<Address> toAddressList;
+    private Address toAddress;
+
+    public TravelAdapter(Context context, int resource, List<Travel> objects) {
+        this.ctx =context;
+        this.LayResId = resource;
+        this.data = objects;
+        layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        geocoder = new Geocoder(ctx, Locale.getDefault());
+    }
     @Override
     public int getCount() {
-        return 0;
+        return data.size();
     }
 
     @Override
     public Object getItem(int i) {
-        return null;
+        return data.get(i);
     }
 
     @Override
@@ -26,6 +55,30 @@ public class TravelAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        return null;
+        View row = view;
+        Travel currMeet = getPhoto(i);
+        row = layoutInflater.inflate(LayResId,viewGroup,false);
+        try {
+            fromAaddress = geocoder.getFromLocation(currMeet.getStartPoint().getLat(),currMeet.getStartPoint().getLon(),1);
+            fromAddr = fromAaddress.get(0);
+
+            toAddressList = geocoder.getFromLocation(currMeet.getEndPoint().getLat(),currMeet.getEndPoint().getLon(),1);
+            toAddress = toAddressList.get(0);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        TextView nameText = (TextView) row.findViewById(R.id.travel_name);
+        nameText.setText(currMeet.getTitle());
+
+        TextView startPointText = (TextView) row.findViewById(R.id.start_text_point);
+        startPointText.setText(fromAddr.getAdminArea()+"  ,"+fromAddr.getCountryName()+"  ,"+fromAddr.getAdminArea()+fromAddr.getSubThoroughfare());
+
+        TextView endPointText = (TextView) row.findViewById(R.id.end_text_point);
+        endPointText.setText(toAddress.getAdminArea()+"  ,"+toAddress.getCountryName()+"  ,"+toAddress.getAdminArea()+toAddress.getSubThoroughfare());
+        return row;
+    }
+
+    public Travel getPhoto(int Position){
+        return (Travel) getItem(Position);
     }
 }
