@@ -1,11 +1,15 @@
 package com.almayandex.adapters;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +43,7 @@ public class PointsAdapter extends BaseAdapter {
     private Geocoder geocoder;
     private List<Address> address;
     private Address addr;
+    private SharedPreferences shre;
 
 
     public PointsAdapter(Context context, int resource, List<MyPoint> objects) {
@@ -47,6 +52,7 @@ public class PointsAdapter extends BaseAdapter {
         this.data = objects;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         geocoder = new Geocoder(ctx, Locale.getDefault());
+        shre = PreferenceManager.getDefaultSharedPreferences(ctx);
     }
     @Override
     public int getCount() {
@@ -98,13 +104,17 @@ public class PointsAdapter extends BaseAdapter {
         else {
             lon.setText(addr.getThoroughfare()+", "+addr.getSubThoroughfare());
         }
-        LinearLayout linearLayout = (LinearLayout) row.findViewById(R.id.photos_layout);
-        for (Bitmap photo:myPoint.getPhotos()){
-            ImageView imageView = new ImageView(ctx);
-            imageView.setImageBitmap(photo);
-            imageView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT));
-            linearLayout.addView(imageView);
+        String previouslyEncodedImage = shre.getString(Double.toString(myPoint.getGeoPoint().getLon()), "");
+        if( !previouslyEncodedImage.equalsIgnoreCase("") ){
+            byte[] b = Base64.decode(previouslyEncodedImage, Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
+            LinearLayout linearLayout = (LinearLayout) row.findViewById(R.id.photos_layout);
+                ImageView imageView = new ImageView(ctx);
+                imageView.setImageBitmap(bitmap);
+                imageView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT));
+                linearLayout.addView(imageView);
         }
+
         return row;
     }
 

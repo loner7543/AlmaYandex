@@ -1,12 +1,16 @@
 package com.almayandex.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.almayandex.R;
@@ -30,6 +34,7 @@ public class TravelAdapter extends BaseAdapter {
     private Address fromAddr;
     private List<Address> toAddressList;
     private Address toAddress;
+    private GridView gridView;
 
     public TravelAdapter(Context context, int resource, List<Travel> objects) {
         this.ctx =context;
@@ -57,6 +62,8 @@ public class TravelAdapter extends BaseAdapter {
     public View getView(int i, View view, ViewGroup viewGroup) {
         View row = view;
         Travel currMeet = getPhoto(i);
+        List<Bitmap> photos = currMeet.getStartPoint().getPhotos();
+        photos.addAll(currMeet.getEndPoint().getPhotos());
         row = layoutInflater.inflate(LayResId,viewGroup,false);
         try {
             fromAaddress = geocoder.getFromLocation(currMeet.getStartPoint().getGeoPoint().getLat(),currMeet.getStartPoint().getGeoPoint().getLon(),1);
@@ -75,6 +82,12 @@ public class TravelAdapter extends BaseAdapter {
 
         TextView endPointText = (TextView) row.findViewById(R.id.end_text_point);
         endPointText.setText(toAddress.getAdminArea()+"  ,"+toAddress.getCountryName()+"  ,"+toAddress.getAdminArea()+toAddress.getSubThoroughfare());
+        gridView = (GridView) row.findViewById(R.id.gridView);
+        for (Bitmap bitmap:photos){
+            ImageView imageView = (ImageView) gridView.findViewById(R.id.elem);
+            imageView.setImageBitmap(bitmap);
+            gridView.addView(imageView);
+        }
         return row;
     }
 

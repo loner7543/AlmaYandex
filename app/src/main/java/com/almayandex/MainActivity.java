@@ -208,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             }
             case R.id.free_points_show:{
-                intent = new Intent(this,FreePointsActivity.class);
+                intent = new Intent(this,FreePointsScrollingActivity.class);
                 int i = 0;
                 for (MyPoint geoPoint:freePoints){
                     intent.putExtra("lat"+i, geoPoint.getGeoPoint().getLat());

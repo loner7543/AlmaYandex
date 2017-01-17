@@ -2,18 +2,23 @@ package com.almayandex;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.almayandex.adapters.PointsAdapter;
 
@@ -21,9 +26,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import ru.yandex.yandexmapkit.utils.GeoPoint;
-import ru.yandex.yandexmapkit.utils.Point;
 
-public class FreePointsActivity extends AppCompatActivity implements AdapterView.OnItemClickListener,View.OnClickListener {
+public class FreePointsScrollingActivity extends AppCompatActivity  implements AdapterView.OnItemClickListener,View.OnClickListener{
     public static final int CAMERA_RESULT_ADD = 0;
     private Button deletePointButton;
     private List<MyPoint> data;
@@ -32,11 +36,15 @@ public class FreePointsActivity extends AppCompatActivity implements AdapterView
     private int dataCount;
     private PointsAdapter pointsAdapter;
     private MyPoint selectedItem;
+    private SharedPreferences shre;
+    private SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_free_points);
+        setContentView(R.layout.activity_free_points_scrolling);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         listView = (ListView) findViewById(R.id.free_points_list);
         deletePointButton = (Button) findViewById(R.id.removeBtn);
         deletePointButton.setOnClickListener(this);
@@ -50,17 +58,17 @@ public class FreePointsActivity extends AppCompatActivity implements AdapterView
         pointsAdapter = new PointsAdapter(this,R.layout.point_item,data);
         listView.setAdapter(pointsAdapter);
         listView.setOnItemClickListener(this);
-
-    }
-
-
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        selectedItem = (MyPoint) adapterView.getItemAtPosition(i);
+        shre = PreferenceManager.getDefaultSharedPreferences(this);
+        editor = shre.edit();
     }
 
     @Override
-    public void onClick(View view) {
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        selectedItem = (MyPoint) parent.getItemAtPosition(position);
+    }
+
+    @Override
+    public void onClick(View v) {
         Intent intent = new Intent();
         intent.putExtra("lat",selectedItem.getGeoPoint().getLat());
         intent.putExtra("lon",selectedItem.getGeoPoint().getLon());
@@ -74,10 +82,10 @@ public class FreePointsActivity extends AppCompatActivity implements AdapterView
     }
 
     public void onAddDescription(View view){
-        LayoutInflater layoutInflater = LayoutInflater.from(FreePointsActivity.this);
+        LayoutInflater layoutInflater = LayoutInflater.from(FreePointsScrollingActivity.this);
         View promptView = layoutInflater.inflate(R.layout.edit_dialog, null);
         final EditText editText = (EditText) promptView.findViewById(R.id.point_desc);
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(FreePointsActivity.this);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(FreePointsScrollingActivity.this);
         alertDialogBuilder.setTitle("Введите описание для точки");
         alertDialogBuilder.setView(promptView);
         alertDialogBuilder.setCancelable(false)
@@ -113,6 +121,9 @@ public class FreePointsActivity extends AppCompatActivity implements AdapterView
                             dataItem = myPoint;
                         }
                     }
+                    String encodedImage = Base64.encodeToString(BitmapUtil.getBytes(thumbnailBitmap), Base64.DEFAULT);
+                    editor.putString(String.valueOf(dataItem.getGeoPoint().getLon()),encodedImage);
+                    editor.commit();
                     dataItem.getPhotos().add(thumbnailBitmap);
                     pointsAdapter.notifyDataSetChanged();
                 }
@@ -120,7 +131,7 @@ public class FreePointsActivity extends AppCompatActivity implements AdapterView
 
                 }
                 break;
-        }
+            }
         }
     }
 }

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.almayandex.FreePointsScrollingActivity"
+    tools:showIn="@layout/activity_free_points_scrolling">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ListView
+            android:id="@+id/free_points_list"
+            android:layout_width="wrap_content"
+            android:layout_height="500dp"></ListView>
+        <Button
+            android:layout_below="@+id/free_points_list"
+            android:id="@+id/removeBtn"
+            android:text="Удалить точку"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/addPhoto"
+            android:layout_below="@+id/removeBtn"
+            android:text="Добавить фото"
+            android:onClick="onAddPhoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/addDescBtn"
+            android:layout_below="@+id/removeBtn"
+            android:layout_toRightOf="@+id/addPhoto"
+            android:onClick="onAddDescription"
+            android:text="Добавить описание"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+</android.support.v4.widget.NestedScrollView>
