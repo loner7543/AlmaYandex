@@ -6,4 +6,17 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/upDB"
+        android:orderInCategory="100"
+        android:title="Поднять бд"
+        app:showAsAction="never">
+    </item>
+    <item
+        android:orderInCategory="100"
+        android:title="Удалить бд"
+        app:showAsAction="never"
+        android:id="@+id/deleteDB">
+
+    </item>
 </menu>

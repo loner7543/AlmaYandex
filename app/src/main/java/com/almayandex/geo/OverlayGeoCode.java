@@ -1,16 +1,13 @@
 package com.almayandex.geo;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 
-import com.almayandex.MyPoint;
-import com.almayandex.R;
+import com.almayandex.domain.MyPoint;
 
 import java.util.List;
 
 import ru.yandex.yandexmapkit.MapController;
-import ru.yandex.yandexmapkit.MapView;
 import ru.yandex.yandexmapkit.map.GeoCode;
 import ru.yandex.yandexmapkit.map.GeoCodeListener;
 import ru.yandex.yandexmapkit.overlay.Overlay;

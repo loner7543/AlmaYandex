@@ -3,12 +3,11 @@ package com.almayandex;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -21,6 +20,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.almayandex.adapters.PointsAdapter;
+import com.almayandex.domain.MyPoint;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -36,8 +36,9 @@ public class FreePointsScrollingActivity extends AppCompatActivity  implements A
     private int dataCount;
     private PointsAdapter pointsAdapter;
     private MyPoint selectedItem;
-    private SharedPreferences shre;
-    private SharedPreferences.Editor editor;
+    private DbUtils utils;
+    private SQLiteDatabase sqLiteDatabase;
+    private List<MyPoint> dbBData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,11 +56,12 @@ public class FreePointsScrollingActivity extends AppCompatActivity  implements A
             GeoPoint geoPoint = new GeoPoint(intent.getDoubleExtra("lat"+j,0.0),intent.getDoubleExtra("lon"+j,0.0));
             data.add(new MyPoint(geoPoint));
         }
-        pointsAdapter = new PointsAdapter(this,R.layout.point_item,data);
+        utils = new DbUtils(this, DbUtils.DATABASE_NAME, DbUtils.DATABASE_VERSION);
+        sqLiteDatabase = utils.getWritableDatabase();//дает бд на запись
+        dbBData = utils.getAllPoints(sqLiteDatabase);
+        pointsAdapter = new PointsAdapter(this,R.layout.point_item,data,dbBData);
         listView.setAdapter(pointsAdapter);
         listView.setOnItemClickListener(this);
-        shre = PreferenceManager.getDefaultSharedPreferences(this);
-        editor = shre.edit();
     }
 
     @Override
@@ -121,10 +123,11 @@ public class FreePointsScrollingActivity extends AppCompatActivity  implements A
                             dataItem = myPoint;
                         }
                     }
-                    String encodedImage = Base64.encodeToString(BitmapUtil.getBytes(thumbnailBitmap), Base64.DEFAULT);
-                    editor.putString(String.valueOf(dataItem.getGeoPoint().getLon()),encodedImage);
-                    editor.commit();
                     dataItem.getPhotos().add(thumbnailBitmap);
+                    utils.insertPoint(dataItem,sqLiteDatabase);
+
+                    dataItem.getPhotos().add(thumbnailBitmap);
+                    pointsAdapter.getDbPoints().add(dataItem);
                     pointsAdapter.notifyDataSetChanged();
                 }
                 catch (Exception e){

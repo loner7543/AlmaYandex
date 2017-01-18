@@ -3,8 +3,6 @@ package com.almayandex;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -13,7 +11,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.almayandex.adapters.AddTravelAdapter;
 import com.almayandex.adapters.PointsAdapter;
+import com.almayandex.domain.MyPoint;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -30,7 +30,7 @@ public class AddTravelActivity extends AppCompatActivity implements View.OnClick
     private MyPoint fromPoint;
     private MyPoint toPoint;
     private Intent intent;
-    private PointsAdapter pointsAdapter;
+    private AddTravelAdapter pointsAdapter;
     private int count;
     private EditText travelNameEdit;
 
@@ -47,7 +47,7 @@ public class AddTravelActivity extends AppCompatActivity implements View.OnClick
         for (int i = 0;i<count;i++){
             travelsPoints.add(new MyPoint(new GeoPoint(intent.getDoubleExtra("lat"+i,0.0),intent.getDoubleExtra("lon"+i,0.0))));
         }
-        pointsAdapter = new PointsAdapter(this,R.layout.point_item,travelsPoints);
+        pointsAdapter = new AddTravelAdapter(this,R.layout.point_item,travelsPoints);
         addTravelBtn = (Button) findViewById(R.id.onSend);
         addTravelBtn.setOnClickListener(this);
         fromPointSpinner = (Spinner) findViewById(R.id.startPointSpinner);

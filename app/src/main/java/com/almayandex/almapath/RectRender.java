@@ -1,11 +1,10 @@
 package com.almayandex.almapath;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 
-import com.almayandex.Travel;
+import com.almayandex.domain.Travel;
 
 import ru.yandex.yandexmapkit.overlay.IRender;
 import ru.yandex.yandexmapkit.overlay.OverlayItem;

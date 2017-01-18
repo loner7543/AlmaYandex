@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -29,6 +30,9 @@ import android.widget.Toast;
 
 import com.almayandex.adapters.ImageAdapter;
 import com.almayandex.almapath.OverlayRect;
+import com.almayandex.domain.MyPoint;
+import com.almayandex.domain.Travel;
+import com.almayandex.domain.TravelDistance;
 import com.almayandex.geo.OverlayGeoCode;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -81,6 +85,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private List<Travel> travels;
     private OverlayRect overlayRect;//для рисования пути на карте
     private List<OverlayRect> pathRectItems;//все обыекты OverlayRectItem которые использовались для рисования пути
+    private DbUtils dbUtils;
+    private SQLiteDatabase sqLiteDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,6 +155,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.action_settings:{
                 Intent intent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 startActivity(intent);
+                break;
+            }
+            case R.id.upDB:{
+                dbUtils = new DbUtils(this, DbUtils.DATABASE_NAME, DbUtils.DATABASE_VERSION);
+                sqLiteDatabase = dbUtils.getWritableDatabase();//дает бд на запись
+                break;
+            }
+            case R.id.deleteDB:{
+                this.deleteDatabase(DbUtils.DATABASE_NAME);
                 break;
             }
         }

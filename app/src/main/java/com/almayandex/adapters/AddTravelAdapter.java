@@ -2,7 +2,6 @@ package com.almayandex.adapters;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Address;
@@ -17,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.almayandex.DbUtils;
 import com.almayandex.domain.MyPoint;
 import com.almayandex.R;
 
@@ -28,10 +26,10 @@ import java.util.Locale;
 import ru.yandex.yandexmapkit.utils.GeoPoint;
 
 /**
- * Created by Александр on 01.01.2017.
+ * Created by User on 017 17.01.17.
  */
 
-public class PointsAdapter extends BaseAdapter {
+public class AddTravelAdapter extends BaseAdapter {
     private List<MyPoint> data;
     private LayoutInflater layoutInflater;
     private Context ctx;
@@ -40,17 +38,15 @@ public class PointsAdapter extends BaseAdapter {
     private List<Address> address;
     private Address addr;
     private SharedPreferences shre;
-    private List<MyPoint> DbPoints;
 
 
-    public PointsAdapter(Context context, int resource, List<MyPoint> objects,List<MyPoint> dbData) {
+    public AddTravelAdapter(Context context, int resource, List<MyPoint> objects) {
         this.ctx =context;
         this.LayResId = resource;
         this.data = objects;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         geocoder = new Geocoder(ctx, Locale.getDefault());
         shre = PreferenceManager.getDefaultSharedPreferences(ctx);
-        this.DbPoints = dbData;
     }
     @Override
     public int getCount() {
@@ -102,21 +98,6 @@ public class PointsAdapter extends BaseAdapter {
         else {
             lon.setText(addr.getThoroughfare()+", "+addr.getSubThoroughfare());
         }
-
-        /*String previouslyEncodedImage = shre.getString(Double.toString(myPoint.getGeoPoint().getLon()), "");
-        if( !previouslyEncodedImage.equalsIgnoreCase("") ){
-            byte[] b = Base64.decode(previouslyEncodedImage, Base64.DEFAULT);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);*/
-        for (MyPoint p:DbPoints){
-            if (myPoint.getGeoPoint().getLat()==p.getGeoPoint().getLat()){
-                LinearLayout linearLayout = (LinearLayout) row.findViewById(R.id.photos_layout);
-                ImageView imageView = new ImageView(ctx);
-                imageView.setImageBitmap(p.getPhotos().get(0));
-                imageView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT));
-                linearLayout.addView(imageView);
-            }
-        }
-
         return row;
     }
 
@@ -131,9 +112,5 @@ public class PointsAdapter extends BaseAdapter {
 
     public List<MyPoint> getData() {
         return data;
-    }
-
-    public List<MyPoint> getDbPoints() {
-        return DbPoints;
     }
 }

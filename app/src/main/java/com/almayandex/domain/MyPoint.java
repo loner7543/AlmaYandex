@@ -1,4 +1,4 @@
-package com.almayandex;
+package com.almayandex.domain;
 
 import android.graphics.Bitmap;
 
@@ -18,6 +18,12 @@ public class MyPoint {
 
     public MyPoint( GeoPoint geoPoint) {
        photos = new LinkedList<>();
+        this.geoPoint = geoPoint;
+    }
+
+    public MyPoint(String description, List<Bitmap> photos, GeoPoint geoPoint) {
+        this.description = description;
+        this.photos = photos;
         this.geoPoint = geoPoint;
     }
 

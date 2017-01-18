@@ -2,7 +2,7 @@ package com.almayandex.almapath;
 
 import android.content.Context;
 
-import com.almayandex.Travel;
+import com.almayandex.domain.Travel;
 
 import java.util.ArrayList;
 import java.util.List;

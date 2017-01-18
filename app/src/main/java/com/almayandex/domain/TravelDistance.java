@@ -1,4 +1,4 @@
-package com.almayandex;
+package com.almayandex.domain;
 
 /**
  * Created by User on 017 17.01.17.

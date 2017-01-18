@@ -1,6 +1,4 @@
-package com.almayandex;
-
-import ru.yandex.yandexmapkit.utils.GeoPoint;
+package com.almayandex.domain;
 
 /**
  * Created by Александр on 01.01.2017.
