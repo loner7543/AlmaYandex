@@ -83,9 +83,10 @@ public class PointsAdapter extends BaseAdapter {
         TextView lat = (TextView) row.findViewById(R.id.Latitude_text);
         TextView lon = (TextView) row.findViewById(R.id.Longitude_text);
         TextView descText = (TextView) row.findViewById(R.id.point_description);
-        String desc = myPoint.getDescription();
-        if (desc!=null){
-            descText.setText(myPoint.getDescription());
+        for (MyPoint p:DbPoints){
+            if (p.getGeoPoint().getLat()==myPoint.getGeoPoint().getLat()){
+                descText.setText(p.getDescription());
+            }
         }
         String adminArea = addr.getAdminArea();
         if (adminArea==null)
@@ -103,10 +104,6 @@ public class PointsAdapter extends BaseAdapter {
             lon.setText(addr.getThoroughfare()+", "+addr.getSubThoroughfare());
         }
 
-        /*String previouslyEncodedImage = shre.getString(Double.toString(myPoint.getGeoPoint().getLon()), "");
-        if( !previouslyEncodedImage.equalsIgnoreCase("") ){
-            byte[] b = Base64.decode(previouslyEncodedImage, Base64.DEFAULT);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);*/
         for (MyPoint p:DbPoints){
             if (myPoint.getGeoPoint().getLat()==p.getGeoPoint().getLat()){
                 LinearLayout linearLayout = (LinearLayout) row.findViewById(R.id.photos_layout);

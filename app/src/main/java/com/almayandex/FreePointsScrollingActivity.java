@@ -104,6 +104,7 @@ public class FreePointsScrollingActivity extends AppCompatActivity  implements A
                                     }
                                 }
                                 goal.setDescription(text);
+                                selectedItem.setDescription(text);
                                 pointsAdapter.notifyDataSetChanged();
                                 dialog.cancel();
                             }
