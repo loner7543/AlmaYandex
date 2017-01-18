@@ -1,6 +1,7 @@
 package com.almayandex;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -33,6 +34,9 @@ public class AddTravelActivity extends AppCompatActivity implements View.OnClick
     private AddTravelAdapter pointsAdapter;
     private int count;
     private EditText travelNameEdit;
+    private DbUtils utils;
+    private SQLiteDatabase sqLiteDatabase;
+    private List<MyPoint> dbPoints;// точки в бд с фотками
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,11 +47,14 @@ public class AddTravelActivity extends AppCompatActivity implements View.OnClick
         travelNameEdit = (EditText) findViewById(R.id.add_travel_name);
         intent = getIntent();
         count = intent.getIntExtra("count",100);
+        utils = new DbUtils(this, DbUtils.DATABASE_NAME, DbUtils.DATABASE_VERSION);
+        sqLiteDatabase = utils.getWritableDatabase();//дает бд на запись
+        dbPoints = utils.getAllPoints(sqLiteDatabase);
         travelsPoints = new LinkedList<>();
         for (int i = 0;i<count;i++){
             travelsPoints.add(new MyPoint(new GeoPoint(intent.getDoubleExtra("lat"+i,0.0),intent.getDoubleExtra("lon"+i,0.0))));
         }
-        pointsAdapter = new AddTravelAdapter(this,R.layout.point_item,travelsPoints);
+        pointsAdapter = new AddTravelAdapter(this,R.layout.point_item,travelsPoints,dbPoints);
         addTravelBtn = (Button) findViewById(R.id.onSend);
         addTravelBtn.setOnClickListener(this);
         fromPointSpinner = (Spinner) findViewById(R.id.startPointSpinner);

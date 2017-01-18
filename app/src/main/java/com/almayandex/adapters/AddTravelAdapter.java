@@ -37,16 +37,16 @@ public class AddTravelAdapter extends BaseAdapter {
     private Geocoder geocoder;
     private List<Address> address;
     private Address addr;
-    private SharedPreferences shre;
+    private List<MyPoint >dbData;
 
 
-    public AddTravelAdapter(Context context, int resource, List<MyPoint> objects) {
+    public AddTravelAdapter(Context context, int resource, List<MyPoint> objects,List<MyPoint> dbPoints) {
         this.ctx =context;
         this.LayResId = resource;
         this.data = objects;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         geocoder = new Geocoder(ctx, Locale.getDefault());
-        shre = PreferenceManager.getDefaultSharedPreferences(ctx);
+        this.dbData = dbPoints;
     }
     @Override
     public int getCount() {
@@ -79,9 +79,10 @@ public class AddTravelAdapter extends BaseAdapter {
         TextView lat = (TextView) row.findViewById(R.id.Latitude_text);
         TextView lon = (TextView) row.findViewById(R.id.Longitude_text);
         TextView descText = (TextView) row.findViewById(R.id.point_description);
-        String desc = myPoint.getDescription();
-        if (desc!=null){
-            descText.setText(myPoint.getDescription());
+        for (MyPoint p:dbData){
+            if (p.getGeoPoint().getLat()==myPoint.getGeoPoint().getLat()){
+                descText.setText(p.getDescription());
+            }
         }
         String adminArea = addr.getAdminArea();
         if (adminArea==null)
