@@ -111,7 +111,7 @@ public class PointsAdapter extends BaseAdapter {
             if (myPoint.getGeoPoint().getLat()==p.getGeoPoint().getLat()){
                 LinearLayout linearLayout = (LinearLayout) row.findViewById(R.id.photos_layout);
                 ImageView imageView = new ImageView(ctx);
-                imageView.setImageBitmap(p.getPhotos().get(0));
+                imageView.setImageBitmap(p.getPhotos());
                 imageView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT));
                 linearLayout.addView(imageView);
             }

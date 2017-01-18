@@ -91,14 +91,14 @@ public class TravelAdapter extends BaseAdapter {
             //фотка для точки начала пут
             if (currMeet.getStartPoint().getGeoPoint().getLat()==myPoint.getGeoPoint().getLat()){
                 ImageView imageView = new ImageView(ctx);
-                imageView.setImageBitmap(myPoint.getPhotos().get(0));
+                imageView.setImageBitmap(myPoint.getPhotos());
                 imageView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT));
                 linearLayout.addView(imageView);
             }
 
             if (currMeet.getEndPoint().getGeoPoint().getLat()==myPoint.getGeoPoint().getLat()){
                 ImageView imageView = new ImageView(ctx);
-                imageView.setImageBitmap(myPoint.getPhotos().get(0));
+                imageView.setImageBitmap(myPoint.getPhotos());
                 imageView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT));
                 linearLayout.addView(imageView);
             }

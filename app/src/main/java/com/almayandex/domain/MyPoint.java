@@ -13,17 +13,16 @@ import ru.yandex.yandexmapkit.utils.GeoPoint;
 
 public class MyPoint {
     private GeoPoint geoPoint;
-    private List<Bitmap> photos;
+    private Bitmap photo;
     private String description;
 
     public MyPoint( GeoPoint geoPoint) {
-       photos = new LinkedList<>();
         this.geoPoint = geoPoint;
     }
 
-    public MyPoint(String description, List<Bitmap> photos, GeoPoint geoPoint) {
+    public MyPoint(String description, Bitmap photos, GeoPoint geoPoint) {
         this.description = description;
-        this.photos = photos;
+        this.photo = photos;
         this.geoPoint = geoPoint;
     }
 
@@ -35,12 +34,12 @@ public class MyPoint {
         this.geoPoint = geoPoint;
     }
 
-    public List<Bitmap> getPhotos() {
-        return photos;
+    public Bitmap getPhotos() {
+        return photo;
     }
 
-    public void setPhotos(List<Bitmap> photos) {
-        this.photos = photos;
+    public void setPhotos(Bitmap photos) {
+        this.photo = photos;
     }
 
     public String getDescription() {

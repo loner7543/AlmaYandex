@@ -18,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.almayandex.adapters.PointsAdapter;
 import com.almayandex.domain.MyPoint;
@@ -123,15 +124,15 @@ public class FreePointsScrollingActivity extends AppCompatActivity  implements A
                             dataItem = myPoint;
                         }
                     }
-                    dataItem.getPhotos().add(thumbnailBitmap);
+                    dataItem.setPhotos(thumbnailBitmap);
                     utils.insertPoint(dataItem,sqLiteDatabase);
 
-                    dataItem.getPhotos().add(thumbnailBitmap);
                     pointsAdapter.getDbPoints().add(dataItem);
                     pointsAdapter.notifyDataSetChanged();
                 }
                 catch (Exception e){
-
+                    Toast toast = Toast.makeText(this,"Действие было отменено пользователем",Toast.LENGTH_LONG);
+                    toast.show();
                 }
                 break;
             }

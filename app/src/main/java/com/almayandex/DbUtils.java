@@ -75,7 +75,7 @@ public class DbUtils extends SQLiteOpenHelper {
                 description = cursor.getString(descIdx);
                 bitmap = BitmapUtil.getImage(cursor.getBlob(photoIdx));
                 photos.add(bitmap);
-                res.add(new MyPoint(description, photos, new GeoPoint(lat, lon)));
+                res.add(new MyPoint(description, bitmap, new GeoPoint(lat, lon)));
             }
             while (cursor.moveToNext());
             cursor.close();
@@ -88,7 +88,7 @@ public class DbUtils extends SQLiteOpenHelper {
         contentValues.put(DESCRIPTION,myPoint.getDescription());
         contentValues.put(GEO_POINT_LAT,myPoint.getGeoPoint().getLat());
         contentValues.put(GEO_POINT_LON,myPoint.getGeoPoint().getLon());
-        contentValues.put(PHOTO,BitmapUtil.getBytes(myPoint.getPhotos().get(0)));
+        contentValues.put(PHOTO,BitmapUtil.getBytes(myPoint.getPhotos()));
         database.insert(TABLE_NAME,null,contentValues);
     }
 
